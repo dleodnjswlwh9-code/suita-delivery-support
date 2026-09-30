@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}吹田市 救援物資配送支援システム{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="topbar">
+    <div class="brand">吹田市　救援物資配送支援システム</div>
+    <div class="today">{{ today }}</div>
+</header>
+
+<div class="app-shell">
+    <aside class="sidebar">
+        <a class="nav-item {% if active_page == 'home' %}active{% endif %}" href="{{ url_for('home') }}">
+            <span class="nav-icon home-icon"></span>
+            <span>ホーム</span>
+        </a>
+
+        <a class="nav-item {% if active_page == 'plan' %}active{% endif %}" href="{{ url_for('plan') }}">
+            <span class="nav-icon truck-icon"></span>
+            <span>配送計画の作成</span>
+        </a>
+
+        <a class="nav-item disabled" href="javascript:void(0)">
+            <span class="nav-icon route-icon"></span>
+            <span>物資輸送経路</span>
+        </a>
+
+        <a class="nav-item disabled" href="javascript:void(0)">
+            <span class="nav-icon result-icon"></span>
+            <span>結果の表示</span>
+        </a>
+    </aside>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+{% block script %}{% endblock %}
+</body>
+</html>

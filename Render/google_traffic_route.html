@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_05a3099e764ecb03b527a7d59318cfc0 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_05a3099e764ecb03b527a7d59318cfc0" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_05a3099e764ecb03b527a7d59318cfc0 = L.map(
+                "map_05a3099e764ecb03b527a7d59318cfc0",
+                {
+                    center: [34.77755, 135.5293],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 14,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_24d19a26f9251cba51a70163188d28a2 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_24d19a26f9251cba51a70163188d28a2.addTo(map_05a3099e764ecb03b527a7d59318cfc0);
+        
+    
+            var marker_4f7f4766b9f6c4718cda54980711696c = L.marker(
+                [34.7701, 135.5386],
+                {
+}
+            ).addTo(map_05a3099e764ecb03b527a7d59318cfc0);
+        
+    
+        var popup_2b3f1664b6f8fb1cbf8f2a0ef8b72a2a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_619d0695a25ed5f970df1aa7fe514ea7 = $(`<div id="html_619d0695a25ed5f970df1aa7fe514ea7" style="width: 100.0%; height: 100.0%;">出発地点</div>`)[0];
+                popup_2b3f1664b6f8fb1cbf8f2a0ef8b72a2a.setContent(html_619d0695a25ed5f970df1aa7fe514ea7);
+            
+        
+
+        marker_4f7f4766b9f6c4718cda54980711696c.bindPopup(popup_2b3f1664b6f8fb1cbf8f2a0ef8b72a2a)
+        ;
+
+        
+    
+    
+            marker_4f7f4766b9f6c4718cda54980711696c.bindTooltip(
+                `<div>
+                     出発地点
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_e4cf6c2bb6ab6eaa828f4c4c15d47f17 = L.marker(
+                [34.785, 135.52],
+                {
+}
+            ).addTo(map_05a3099e764ecb03b527a7d59318cfc0);
+        
+    
+        var popup_8c6fb59aec62a8b3deeca15086fedb0a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_57d4622e09ecca1eb044cd1191a4191c = $(`<div id="html_57d4622e09ecca1eb044cd1191a4191c" style="width: 100.0%; height: 100.0%;">目的地点</div>`)[0];
+                popup_8c6fb59aec62a8b3deeca15086fedb0a.setContent(html_57d4622e09ecca1eb044cd1191a4191c);
+            
+        
+
+        marker_e4cf6c2bb6ab6eaa828f4c4c15d47f17.bindPopup(popup_8c6fb59aec62a8b3deeca15086fedb0a)
+        ;
+
+        
+    
+    
+            marker_e4cf6c2bb6ab6eaa828f4c4c15d47f17.bindTooltip(
+                `<div>
+                     目的地点
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_661867379c9d605348d8939c8fcf0e84 = L.polyline(
+                [[34.77064, 135.53968], [34.77032, 135.53992], [34.77026, 135.54007], [34.76953, 135.54077], [34.76978, 135.54124], [34.76981, 135.5413], [34.76992, 135.54143], [34.77039, 135.5418], [34.77277, 135.54353], [34.77299, 135.54366], [34.77349, 135.54401], [34.7736, 135.544], [34.77469, 135.54312], [34.77508, 135.5428], [34.77514, 135.5427], [34.77577, 135.54217], [34.77621, 135.54171], [34.77882, 135.53859], [34.77905, 135.53827], [34.77966, 135.53723], [34.77976, 135.53717], [34.78109, 135.53496], [34.7766, 135.53206], [34.77495, 135.53099], [34.77508, 135.5303], [34.77522, 135.52998], [34.77532, 135.5298], [34.77655, 135.5282], [34.7772, 135.52738], [34.77752, 135.5271], [34.77816, 135.52674], [34.77843, 135.52668], [34.77865, 135.5267], [34.77902, 135.52682], [34.77917, 135.5268], [34.7793, 135.5267], [34.78127, 135.52456], [34.78164, 135.52414], [34.782, 135.52359], [34.7829, 135.52213], [34.78301, 135.52199], [34.78344, 135.52164], [34.78365, 135.52156], [34.78436, 135.52143], [34.78494, 135.52123], [34.78584, 135.5209], [34.78593, 135.51973], [34.78572, 135.51967], [34.78559, 135.51959], [34.78542, 135.51942], [34.7853, 135.51952], [34.78511, 135.5196], [34.78498, 135.51973], [34.78496, 135.51974]],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_05a3099e764ecb03b527a7d59318cfc0);
+        
+    
+            poly_line_661867379c9d605348d8939c8fcf0e84.bindTooltip(
+                `<div>
+                     交通情報を考慮した経路
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            map_05a3099e764ecb03b527a7d59318cfc0.fitBounds(
+                [[34.77064, 135.53968], [34.77032, 135.53992], [34.77026, 135.54007], [34.76953, 135.54077], [34.76978, 135.54124], [34.76981, 135.5413], [34.76992, 135.54143], [34.77039, 135.5418], [34.77277, 135.54353], [34.77299, 135.54366], [34.77349, 135.54401], [34.7736, 135.544], [34.77469, 135.54312], [34.77508, 135.5428], [34.77514, 135.5427], [34.77577, 135.54217], [34.77621, 135.54171], [34.77882, 135.53859], [34.77905, 135.53827], [34.77966, 135.53723], [34.77976, 135.53717], [34.78109, 135.53496], [34.7766, 135.53206], [34.77495, 135.53099], [34.77508, 135.5303], [34.77522, 135.52998], [34.77532, 135.5298], [34.77655, 135.5282], [34.7772, 135.52738], [34.77752, 135.5271], [34.77816, 135.52674], [34.77843, 135.52668], [34.77865, 135.5267], [34.77902, 135.52682], [34.77917, 135.5268], [34.7793, 135.5267], [34.78127, 135.52456], [34.78164, 135.52414], [34.782, 135.52359], [34.7829, 135.52213], [34.78301, 135.52199], [34.78344, 135.52164], [34.78365, 135.52156], [34.78436, 135.52143], [34.78494, 135.52123], [34.78584, 135.5209], [34.78593, 135.51973], [34.78572, 135.51967], [34.78559, 135.51959], [34.78542, 135.51942], [34.7853, 135.51952], [34.78511, 135.5196], [34.78498, 135.51973], [34.78496, 135.51974]],
+                {}
+            );
+        
+</script>
+</html>

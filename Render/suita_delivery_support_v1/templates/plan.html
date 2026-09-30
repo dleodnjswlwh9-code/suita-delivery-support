@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}配送計画の作成｜吹田市 救援物資配送支援システム{% endblock %}
+
+{% block content %}
+<section class="plan-page">
+    <h1 class="page-title">配送計画の作成</h1>
+
+    <div class="upload-card">
+        <div class="section-title">避難所収容人数現況表（Excel）</div>
+        <div class="file-row">
+            <label class="file-select-btn" for="capacity-file">ファイルを選択</label>
+            <input id="capacity-file" type="file" accept=".xlsx,.xls">
+            <span id="capacity-file-name" class="file-name">選択されていません</span>
+        </div>
+    </div>
+
+    <div class="upload-card">
+        <div class="section-title">避難所備蓄量現況表（Excel）</div>
+        <div class="file-row">
+            <label class="file-select-btn" for="stock-file">ファイルを選択</label>
+            <input id="stock-file" type="file" accept=".xlsx,.xls">
+            <span id="stock-file-name" class="file-name">選択されていません</span>
+        </div>
+    </div>
+
+    <div class="upload-card">
+        <div class="section-title">輸送拠点現況表（Excel）</div>
+        <div class="file-row">
+            <label class="file-select-btn" for="hub-file">ファイルを選択</label>
+            <input id="hub-file" type="file" accept=".xlsx,.xls">
+            <span id="hub-file-name" class="file-name">選択されていません</span>
+        </div>
+    </div>
+
+    <div class="vehicle-card">
+        <div class="section-title vehicle-heading">車両条件</div>
+
+        <div class="vehicle-header">
+            <div>車両の種類</div>
+            <div>台数</div>
+            <div>1台あたりの積載量</div>
+            <div></div>
+        </div>
+
+        <div id="vehicle-list">
+            <div class="vehicle-row">
+                <select>
+                    <option>選択してください</option>
+                    <option>小型トラック</option>
+                    <option>中型トラック</option>
+                    <option>大型トラック</option>
+                </select>
+                <input type="number" min="0" placeholder="台">
+                <input type="number" min="0" placeholder="食">
+                <button type="button" class="add-vehicle-btn" onclick="addVehicleRow()">＋ 車両を追加</button>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" class="create-plan-btn">配送計画を作成する <span>›</span></button>
+
+    <div class="map-card">
+        <div class="map-card-title">地図（避難所・輸送拠点）</div>
+        <div class="map-placeholder">
+            <div class="map-placeholder-inner">
+                <div class="map-placeholder-title">避難所・輸送拠点データを読み込むと表示されます</div>
+                <div class="map-placeholder-sub">※ 地図機能は次の段階で接続します</div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block script %}
+<script>
+function bindFile(inputId, labelId) {
+    const input = document.getElementById(inputId);
+    const label = document.getElementById(labelId);
+
+    input.addEventListener("change", function () {
+        if (this.files && this.files.length > 0) {
+            label.textContent = this.files[0].name;
+        } else {
+            label.textContent = "選択されていません";
+        }
+    });
+}
+
+bindFile("capacity-file", "capacity-file-name");
+bindFile("stock-file", "stock-file-name");
+bindFile("hub-file", "hub-file-name");
+
+function addVehicleRow() {
+    const container = document.getElementById("vehicle-list");
+    const row = document.createElement("div");
+    row.className = "vehicle-row extra-row";
+    row.innerHTML = `
+        <select>
+            <option>選択してください</option>
+            <option>小型トラック</option>
+            <option>中型トラック</option>
+            <option>大型トラック</option>
+        </select>
+        <input type="number" min="0" placeholder="台">
+        <input type="number" min="0" placeholder="食">
+        <button type="button" class="remove-vehicle-btn" onclick="this.parentElement.remove()">－ 削除</button>
+    `;
+    container.appendChild(row);
+}
+</script>
+{% endblock %}

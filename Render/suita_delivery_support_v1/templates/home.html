@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}ホーム｜吹田市 救援物資配送支援システム{% endblock %}
+
+{% block content %}
+<section class="hero-panel">
+    <img class="hero-image" src="{{ url_for('static', filename='suita_hero.svg') }}" alt="">
+    <div class="hero-title-wrap">
+        <div class="hero-city">吹田市</div>
+        <div class="hero-main-title">救援物資配送支援システム</div>
+    </div>
+</section>
+
+<section class="home-menu-grid">
+    <a class="home-menu-card card-green" href="{{ url_for('plan') }}">
+        <div class="home-card-icon truck-large"></div>
+        <div class="home-card-title">配送計画の作成</div>
+        <div class="home-card-arrow">›</div>
+    </a>
+
+    <div class="home-menu-card card-orange">
+        <div class="home-card-icon route-large"></div>
+        <div class="home-card-title">物資輸送経路</div>
+        <div class="home-card-arrow">›</div>
+    </div>
+
+    <div class="home-menu-card card-purple">
+        <div class="home-card-icon result-large"></div>
+        <div class="home-card-title">結果の表示</div>
+        <div class="home-card-arrow">›</div>
+    </div>
+</section>
+{% endblock %}
