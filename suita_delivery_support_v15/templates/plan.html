@@ -1,0 +1,681 @@
+{% extends "base.html" %}
+{% block title %}配送計画｜救援物資配送支援システム{% endblock %}
+
+{% block content %}
+<section class="plan-page">
+    <h1>配送計画</h1>
+
+    <div class="plan-input-grid">
+        <div class="plan-input-left">
+            <div class="upload-card">
+                <div class="section-title">避難所データ（Excel）</div>
+                <div class="file-row">
+                    <label class="file-select-btn" for="shelter-status-file">ファイルを選択</label>
+                    <input id="shelter-status-file" type="file" accept=".xlsx,.xls">
+                    <span id="shelter-status-file-name" class="file-name">選択されていません</span>
+                </div>
+            </div>
+
+            <div class="upload-card">
+                <div class="section-title">輸送拠点データ（Excel）</div>
+                <div class="file-row">
+                    <label class="file-select-btn" for="hub-status-file">ファイルを選択</label>
+                    <input id="hub-status-file" type="file" accept=".xlsx,.xls">
+                    <span id="hub-status-file-name" class="file-name">選択されていません</span>
+                </div>
+            </div>
+
+            <div class="upload-card">
+                <div class="section-title">緊急交通路データ（Excel）</div>
+                <div class="file-row">
+                    <label class="file-select-btn" for="emergency-road-file">ファイルを選択</label>
+                    <input id="emergency-road-file" type="file" accept=".xlsx,.xls">
+                    <span id="emergency-road-file-name" class="file-name">選択されていません</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="plan-input-right">
+            <div class="vehicle-card">
+                <div class="section-title vehicle-heading">車両条件</div>
+                <div class="vehicle-header">
+                    <div>車両の種類</div>
+                    <div>台数</div>
+                    <div></div>
+                </div>
+                <div id="vehicle-list">
+                    <div class="vehicle-row">
+                        <select class="vehicle-type">
+                            <option value="">選択してください</option>
+                            <option value="2000">小型トラック（2t）</option>
+                            <option value="4000">中型トラック（4t）</option>
+                            <option value="10000">大型トラック（10t）</option>
+                        </select>
+                        <input class="vehicle-count" type="number" min="1" step="1" placeholder="台">
+                        <button type="button" class="add-btn" onclick="addVehicleRow()">＋ 車両を追加</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="disaster-card">
+                <div class="section-title disaster-heading">災害条件</div>
+                <div class="disaster-grid">
+                    <div class="condition-field">
+                        <label for="disaster-intensity">災害強度（震度）</label>
+                        <select id="disaster-intensity">
+                            <option value="">選択してください</option>
+                            <option value="5弱">震度5弱</option>
+                            <option value="5強">震度5強</option>
+                            <option value="6弱">震度6弱</option>
+                            <option value="6強以上">震度6強以上</option>
+                        </select>
+                    </div>
+                    <div class="condition-field">
+                        <label for="elapsed-time">発災後経過時間</label>
+                        <select id="elapsed-time">
+                            <option value="">選択してください</option>
+                            <option value="0">発災直後</option>
+                            <option value="24">24時間後</option>
+                            <option value="48">48時間後</option>
+                            <option value="72">72時間後</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="allocation-ref-card">
+                <div class="section-title">配分結果</div>
+                <div class="condition-table compact-condition-table">
+                    <div class="condition-label">対象避難所</div><div id="delivery-allocation-count">-</div>
+                    <div class="condition-label">食料配分総量</div><div id="delivery-food-total">-</div>
+                    <div class="condition-label">飲料水配分総量</div><div id="delivery-water-total">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" class="create-btn" onclick="savePlanConditions()">配送計画を実行する　›</button>
+
+    <div class="map-card">
+        <div class="map-title-row">
+            <div class="map-card-title">地図（避難所・輸送拠点・緊急交通路）</div>
+            <div class="legend">
+                <span><i class="legend-dot shelter-dot"></i>避難所</span>
+                <span><i class="legend-star">★</i>輸送拠点</span>
+                <span><i class="legend-line wide-road-line"></i>広域緊急交通路</span>
+                <span><i class="legend-line prefectural-road-line"></i>地域緊急交通路（府）</span>
+                <span><i class="legend-line municipal-road-line"></i>地域緊急交通路（市）</span>
+            </div>
+        </div>
+
+        {% if api_key %}
+        <div id="google-map"></div>
+        {% else %}
+        <div class="api-warning">
+            Google Maps APIキーが設定されていません。RenderのEnvironmentまたはPowerShellで
+            <code>GOOGLE_MAPS_API_KEY</code>
+            を設定してください。
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+let map;
+let infoWindow;
+let shelterMarkers = [];
+let hubMarkers = [];
+let shelterData = [];
+let hubData = [];
+let emergencyRoadData = [];
+let emergencyRoadLines = [];
+let emergencyRoadGeoJsonMaster = null;
+
+const SUITA_CENTER = {lat: 34.7594, lng: 135.5166};
+
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function numberOrNull(value) {
+    if (value === null || value === undefined || value === "") return null;
+    const n = Number(value);
+    return Number.isFinite(n) ? n : null;
+}
+
+function addVehicleRow() {
+    const list = document.getElementById("vehicle-list");
+    const row = document.createElement("div");
+    row.className = "vehicle-row extra-row";
+    row.innerHTML = `
+      <select class="vehicle-type">
+        <option value="">選択してください</option>
+        <option value="2000">小型トラック（2t）</option>
+        <option value="4000">中型トラック（4t）</option>
+        <option value="10000">大型トラック（10t）</option>
+      </select>
+      <input class="vehicle-count" type="number" min="1" step="1" placeholder="台">
+      <button type="button" class="remove-btn" onclick="this.parentElement.remove()">－ 削除</button>`;
+    list.appendChild(row);
+}
+
+function clearMarkers(markers) {
+    markers.forEach(marker => marker.setMap(null));
+    markers.length = 0;
+}
+
+function stockHtml(item) {
+    const stock = item.stock || {};
+    return `
+      <div class="popup-stock">
+        レトルトご飯：${escapeHtml(stock.retortRice ?? "-")} 食<br>
+        ライスクッキー：${escapeHtml(stock.riceCookie ?? "-")} 食<br>
+        飲料水500ml：${escapeHtml(stock.water500ml ?? "-")} 本<br>
+        乳児用紙おむつ S/M/L：${escapeHtml(stock.diaper ?? "-")} 枚<br>
+        簡易トイレ：${escapeHtml(stock.toilet ?? "-")} 個<br>
+        毛布：${escapeHtml(stock.blanket ?? "-")} 枚
+      </div>`;
+}
+
+function createMarker(item) {
+    const isHub = item.type === "hub";
+    const marker = new google.maps.Marker({
+        map,
+        position: {lat: item.lat, lng: item.lng},
+        title: item.name,
+        icon: isHub ? {
+            url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 38 38"><path d="M19 2.8l4.7 9.5 10.5 1.5-7.6 7.4 1.8 10.4L19 26.7l-9.4 4.9 1.8-10.4-7.6-7.4 10.5-1.5L19 2.8z" fill="#7b3fc6" stroke="#ffffff" stroke-width="2.2"/></svg>`),
+            scaledSize: new google.maps.Size(38, 38),
+            anchor: new google.maps.Point(19, 19)
+        } : {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 6,
+            fillColor: "#777777",
+            fillOpacity: 1,
+            strokeColor: "#ffffff",
+            strokeWeight: 1.5
+        },
+        zIndex: isHub ? 1000 : 100
+    });
+
+    marker.addListener("click", () => {
+        const detail = isHub
+            ? `<div>${escapeHtml(item.category || "輸送拠点")}</div>`
+            : `<div>収容可能人数：${escapeHtml(item.capacity ?? "-")} 人</div>`;
+
+        infoWindow.setContent(`
+          <div class="map-popup">
+            <strong>${escapeHtml(item.name)}</strong>
+            ${detail}
+            ${stockHtml(item)}
+          </div>`);
+        infoWindow.open(map, marker);
+    });
+
+    return marker;
+}
+
+function fitToLoadedData() {
+    const allMarkers = [...shelterMarkers, ...hubMarkers];
+    const bounds = new google.maps.LatLngBounds();
+    let hasData = false;
+
+    allMarkers.forEach(marker => {
+        bounds.extend(marker.getPosition());
+        hasData = true;
+    });
+    emergencyRoadLines.forEach(line => {
+        line.getPath().forEach(point => bounds.extend(point));
+        hasData = true;
+    });
+
+    if (!hasData) {
+        map.setCenter(SUITA_CENTER);
+        map.setZoom(12);
+        return;
+    }
+    map.fitBounds(bounds, 40);
+}
+
+
+function renderShelters(items) {
+    clearMarkers(shelterMarkers);
+    shelterData = items;
+    items.forEach(item => shelterMarkers.push(createMarker(item)));
+    fitToLoadedData();
+}
+
+function renderHubs(items) {
+    clearMarkers(hubMarkers);
+    hubData = items;
+    items.forEach(item => hubMarkers.push(createMarker(item)));
+    fitToLoadedData();
+}
+
+async function readWorkbook(file) {
+    const buffer = await file.arrayBuffer();
+    return XLSX.read(buffer, {type: "array"});
+}
+
+function firstSheetRows(workbook) {
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    return XLSX.utils.sheet_to_json(sheet, {header: 1, defval: "", raw: true});
+}
+
+function parseShelterRows(rows) {
+    const items = [];
+    for (let i = 2; i < rows.length; i++) {
+        const row = rows[i] || [];
+        const name = String(row[0] ?? "").trim();
+        const lat = numberOrNull(row[1]);
+        const lng = numberOrNull(row[2]);
+        if (!name || lat === null || lng === null) continue;
+
+        items.push({
+            type: "shelter",
+            name,
+            lat,
+            lng,
+            capacity: numberOrNull(row[3]),
+            stock: {
+                retortRice: numberOrNull(row[4]),
+                riceCookie: numberOrNull(row[5]),
+                water500ml: numberOrNull(row[6]),
+                diaper: numberOrNull(row[7]),
+                toilet: numberOrNull(row[8]),
+                blanket: numberOrNull(row[9])
+            }
+        });
+    }
+    return items;
+}
+
+function parseHubRows(rows) {
+    const items = [];
+    for (let i = 2; i < rows.length; i++) {
+        const row = rows[i] || [];
+        const name = String(row[0] ?? "").trim();
+        const lat = numberOrNull(row[1]);
+        const lng = numberOrNull(row[2]);
+        if (!name || lat === null || lng === null) continue;
+
+        items.push({
+            type: "hub",
+            name,
+            lat,
+            lng,
+            category: String(row[3] ?? "").trim(),
+            stock: {
+                retortRice: numberOrNull(row[4]),
+                riceCookie: numberOrNull(row[5]),
+                water500ml: numberOrNull(row[6]),
+                diaper: numberOrNull(row[7]),
+                toilet: numberOrNull(row[8]),
+                blanket: numberOrNull(row[9])
+            }
+        });
+    }
+    return items;
+}
+
+
+function normalizeHeader(value) {
+    return String(value ?? "").replace(/\s+/g, "").replace(/[()（）]/g, "").toLowerCase();
+}
+
+function findHeaderIndex(headers, candidates) {
+    const normalized = headers.map(normalizeHeader);
+    for (const candidate of candidates) {
+        const target = normalizeHeader(candidate);
+        const exact = normalized.indexOf(target);
+        if (exact >= 0) return exact;
+    }
+    for (let i = 0; i < normalized.length; i++) {
+        if (candidates.some(candidate => normalized[i].includes(normalizeHeader(candidate)))) return i;
+    }
+    return -1;
+}
+
+function emergencyRoadColor(type) {
+    const value = String(type ?? "").replace(/\s+/g, "");
+    if (value.includes("広域")) return "#e53935";
+    if (value.includes("（府）") || value.includes("(府)") || value.includes("府道")) return "#f4c430";
+    if (value.includes("（市）") || value.includes("(市)") || value.includes("市道")) return "#2e9d53";
+    return "#607d8b";
+}
+
+function parseEmergencyRoadRows(rows) {
+    if (!rows.length) return [];
+
+    let headerRowIndex = 0;
+    for (let i = 0; i < Math.min(rows.length, 5); i++) {
+        const joined = (rows[i] || []).map(v => String(v ?? "")).join(" ");
+        if (/路線名|道路名|区分|道路区分/.test(joined)) {
+            headerRowIndex = i;
+            break;
+        }
+    }
+
+    const headers = rows[headerRowIndex] || [];
+    const nameIdx = findHeaderIndex(headers, ["路線名", "道路名", "名称"]);
+    const typeIdx = findHeaderIndex(headers, ["区分", "道路区分", "種別"]);
+    if (nameIdx < 0 || typeIdx < 0) return [];
+
+    const roads = [];
+    for (let i = headerRowIndex + 1; i < rows.length; i++) {
+        const row = rows[i] || [];
+        const name = String(row[nameIdx] ?? "").trim();
+        const type = String(row[typeIdx] ?? "").trim();
+        if (!name || !type) continue;
+        roads.push({name, type});
+    }
+    return roads;
+}
+
+async function ensureEmergencyRoadGeoJsonMaster() {
+    if (emergencyRoadGeoJsonMaster) return emergencyRoadGeoJsonMaster;
+    const response = await fetch("/api/emergency-roads", {cache: "no-store"});
+    if (!response.ok) throw new Error("緊急交通路の内部線形データを取得できませんでした。");
+    emergencyRoadGeoJsonMaster = await response.json();
+    return emergencyRoadGeoJsonMaster;
+}
+
+function clearEmergencyRoads() {
+    emergencyRoadLines.forEach(line => line.setMap(null));
+    emergencyRoadLines = [];
+}
+
+function normalizeRoadName(value) {
+    return String(value ?? "")
+        .replace(/\s+/g, "")
+        .replace(/[‐‑‒–—―ー]/g, "-")
+        .trim();
+}
+
+function lineStringsFromGeometry(geometry) {
+    if (!geometry) return [];
+    if (geometry.type === "LineString") return [geometry.coordinates || []];
+    if (geometry.type === "MultiLineString") return geometry.coordinates || [];
+    return [];
+}
+
+async function renderEmergencyRoads(roads) {
+    clearEmergencyRoads();
+    emergencyRoadData = roads;
+
+    const geojson = await ensureEmergencyRoadGeoJsonMaster();
+    const featureMap = new Map();
+    (geojson.features || []).forEach(feature => {
+        const name = normalizeRoadName(feature?.properties?.name);
+        if (name) featureMap.set(name, feature);
+    });
+
+    const unmatched = [];
+
+    roads.forEach(road => {
+        const feature = featureMap.get(normalizeRoadName(road.name));
+        const lines = lineStringsFromGeometry(feature?.geometry);
+        if (!lines.length) {
+            unmatched.push(road.name);
+            return;
+        }
+
+        lines.forEach(coords => {
+            const path = (coords || [])
+                .filter(point => Array.isArray(point) && point.length >= 2)
+                .map(point => ({lat: Number(point[1]), lng: Number(point[0])}))
+                .filter(point => Number.isFinite(point.lat) && Number.isFinite(point.lng));
+            if (path.length < 2) return;
+
+            const line = new google.maps.Polyline({
+                map,
+                path,
+                geodesic: true,
+                strokeColor: emergencyRoadColor(road.type),
+                strokeOpacity: 0.95,
+                strokeWeight: 6,
+                zIndex: 50
+            });
+
+            line.addListener("click", event => {
+                infoWindow.setPosition(event.latLng);
+                infoWindow.setContent(`
+                  <div class="map-popup">
+                    <strong>${escapeHtml(road.name)}</strong>
+                    <div>${escapeHtml(road.type)}</div>
+                  </div>`);
+                infoWindow.open(map);
+            });
+
+            emergencyRoadLines.push(line);
+        });
+    });
+
+    if (unmatched.length) {
+        console.warn("内部線形データが未登録の路線:", unmatched);
+    }
+    fitToLoadedData();
+}
+
+async function handleExcelSelection({inputId, fileNameId, kind}) {
+    const input = document.getElementById(inputId);
+    const fileName = document.getElementById(fileNameId);
+
+    input.addEventListener("change", async function () {
+        if (!this.files || !this.files.length) return;
+        const file = this.files[0];
+        fileName.textContent = file.name;
+
+        try {
+            const workbook = await readWorkbook(file);
+            const rows = firstSheetRows(workbook);
+            const items = kind === "shelter" ? parseShelterRows(rows) : parseHubRows(rows);
+
+            if (!items.length) {
+                throw new Error("名称・緯度・経度を含むデータ行を確認できませんでした。");
+            }
+
+            if (kind === "shelter") {
+                renderShelters(items);
+                sessionStorage.setItem("shelterData", JSON.stringify(items));
+                sessionStorage.setItem("shelterFileName", file.name);
+            } else {
+                renderHubs(items);
+                sessionStorage.setItem("hubData", JSON.stringify(items));
+                sessionStorage.setItem("hubFileName", file.name);
+            }
+            sessionStorage.removeItem("allocationPlan");
+            updateAllocationReference();
+        } catch (error) {
+            console.error(error);
+            fileName.textContent = "読み込みエラー";
+            alert("Excelデータを読み込めませんでした。名称・緯度・経度を確認してください。");
+        }
+    });
+}
+
+handleExcelSelection({
+    inputId: "shelter-status-file",
+    fileNameId: "shelter-status-file-name",
+    kind: "shelter"
+});
+
+handleExcelSelection({
+    inputId: "hub-status-file",
+    fileNameId: "hub-status-file-name",
+    kind: "hub"
+});
+
+
+document.getElementById("emergency-road-file").addEventListener("change", async function () {
+    const fileName = document.getElementById("emergency-road-file-name");
+    if (!this.files || !this.files.length) return;
+
+    const file = this.files[0];
+    fileName.textContent = file.name;
+
+    try {
+        const workbook = await readWorkbook(file);
+        const rows = firstSheetRows(workbook);
+        const roads = parseEmergencyRoadRows(rows);
+        if (!roads.length) {
+            throw new Error("区分・路線名を含む緊急交通路データを確認できませんでした。");
+        }
+        await renderEmergencyRoads(roads);
+        sessionStorage.setItem("emergencyRoadData", JSON.stringify(roads));
+    } catch (error) {
+        console.error(error);
+        clearEmergencyRoads();
+        emergencyRoadData = [];
+        fileName.textContent = "読み込みエラー";
+        alert("緊急交通路データを読み込めませんでした。区分・路線名を確認してください。");
+    }
+});
+
+function getAllocationPlan() {
+    try {
+        return JSON.parse(sessionStorage.getItem("allocationPlan") || "null");
+    } catch (error) {
+        return null;
+    }
+}
+
+function updateAllocationReference() {
+    const allocationPlan = getAllocationPlan();
+    const countEl = document.getElementById("delivery-allocation-count");
+    const foodEl = document.getElementById("delivery-food-total");
+    const waterEl = document.getElementById("delivery-water-total");
+    if (!allocationPlan) {
+        countEl.textContent = "未実行";
+        foodEl.textContent = "-";
+        waterEl.textContent = "-";
+        return;
+    }
+    countEl.textContent = `${allocationPlan.counts?.eligible ?? "-"} か所`;
+    foodEl.textContent = `${Number(allocationPlan.food?.usedKg || 0).toLocaleString("ja-JP", {minimumFractionDigits:1, maximumFractionDigits:1})} kg`;
+    waterEl.textContent = `${Number(allocationPlan.water?.usedKg || 0).toLocaleString("ja-JP", {minimumFractionDigits:1, maximumFractionDigits:1})} kg`;
+}
+
+function restorePlanData() {
+    try {
+        const storedShelters = JSON.parse(sessionStorage.getItem("shelterData") || "[]");
+        const storedHubs = JSON.parse(sessionStorage.getItem("hubData") || "[]");
+        const shelterFileName = sessionStorage.getItem("shelterFileName");
+        const hubFileName = sessionStorage.getItem("hubFileName");
+
+        if (storedShelters.length) {
+            renderShelters(storedShelters);
+            if (shelterFileName) document.getElementById("shelter-status-file-name").textContent = shelterFileName;
+        }
+        if (storedHubs.length) {
+            renderHubs(storedHubs);
+            if (hubFileName) document.getElementById("hub-status-file-name").textContent = hubFileName;
+        }
+    } catch (error) {
+        console.warn("保存済みデータを復元できませんでした。", error);
+    }
+    updateAllocationReference();
+}
+
+function savePlanConditions() {
+    const allocationPlan = getAllocationPlan();
+    if (!allocationPlan) {
+        alert("先に配分計画を実行してください。");
+        return;
+    }
+
+    const vehicles = [...document.querySelectorAll("#vehicle-list .vehicle-row")].map(row => {
+        const type = row.querySelector(".vehicle-type");
+        const count = row.querySelector(".vehicle-count");
+        return {
+            type: type.options[type.selectedIndex]?.text || "",
+            capacityKg: Number(type.value || 0),
+            count: Number(count.value || 0)
+        };
+    }).filter(v => v.capacityKg > 0 && v.count > 0);
+
+    const disasterIntensity = document.getElementById("disaster-intensity").value;
+    const elapsedTime = document.getElementById("elapsed-time").value;
+    const emergencyFile = document.getElementById("emergency-road-file");
+
+    if (!shelterData.length) {
+        alert("避難所データを選択してください。");
+        return;
+    }
+    if (!hubData.length) {
+        alert("輸送拠点データを選択してください。");
+        return;
+    }
+    if (!emergencyFile.files.length) {
+        alert("緊急交通路データを選択してください。");
+        return;
+    }
+    if (!vehicles.length) {
+        alert("車両条件を設定してください。");
+        return;
+    }
+    if (!disasterIntensity || elapsedTime === "") {
+        alert("災害条件を設定してください。");
+        return;
+    }
+
+    const planConditions = {
+        vehicles,
+        disasterIntensity,
+        elapsedTimeHours: Number(elapsedTime),
+        allocationPlan
+    };
+    sessionStorage.setItem("planConditions", JSON.stringify(planConditions));
+    alert("配送計画の入力条件を保存しました。");
+}
+
+function initMap() {
+    map = new google.maps.Map(document.getElementById("google-map"), {
+        center: SUITA_CENTER,
+        zoom: 12,
+        mapTypeControl: true,
+        streetViewControl: false,
+        fullscreenControl: true,
+        gestureHandling: "greedy",
+        mapTypeControlOptions: {
+            mapTypeIds: ["roadmap", "satellite"]
+        }
+    });
+    infoWindow = new google.maps.InfoWindow();
+    restorePlanData();
+}
+</script>
+
+{% if not api_key %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    try {
+        const storedShelters = JSON.parse(sessionStorage.getItem("shelterData") || "[]");
+        const storedHubs = JSON.parse(sessionStorage.getItem("hubData") || "[]");
+        shelterData = storedShelters;
+        hubData = storedHubs;
+        const shelterFileName = sessionStorage.getItem("shelterFileName");
+        const hubFileName = sessionStorage.getItem("hubFileName");
+        if (shelterFileName) document.getElementById("shelter-status-file-name").textContent = shelterFileName;
+        if (hubFileName) document.getElementById("hub-status-file-name").textContent = hubFileName;
+    } catch (error) {}
+    updateAllocationReference();
+});
+</script>
+{% endif %}
+
+{% if api_key %}
+<script async defer
+ src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&callback=initMap&language=ja&region=JP">
+</script>
+{% endif %}
+{% endblock %}

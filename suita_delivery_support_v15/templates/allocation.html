@@ -1,0 +1,455 @@
+{% extends "base.html" %}
+{% block title %}配分計画｜救援物資配送支援システム{% endblock %}
+
+{% block content %}
+<section class="allocation-page">
+    <h1>配分計画</h1>
+
+    <div class="allocation-input-grid">
+        <div class="allocation-input-left">
+            <div class="upload-card">
+                <div class="section-title">避難所データ（Excel）</div>
+                <div class="file-row">
+                    <label class="file-select-btn" for="allocation-shelter-file">ファイルを選択</label>
+                    <input id="allocation-shelter-file" type="file" accept=".xlsx,.xls">
+                    <span id="allocation-shelter-file-name" class="file-name">選択されていません</span>
+                </div>
+            </div>
+
+            <div class="upload-card">
+                <div class="section-title">輸送拠点データ（Excel）</div>
+                <div class="file-row">
+                    <label class="file-select-btn" for="allocation-hub-file">ファイルを選択</label>
+                    <input id="allocation-hub-file" type="file" accept=".xlsx,.xls">
+                    <span id="allocation-hub-file-name" class="file-name">選択されていません</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="allocation-input-right">
+            <div class="allocation-condition-card">
+                <div class="section-title">配分条件</div>
+                <div class="condition-table">
+                    <div class="condition-label">対象避難所</div><div><span id="eligible-count">-</span> か所</div>
+                    <div class="condition-label">除外避難所</div><div><span id="excluded-count">-</span> か所</div>
+                    <div class="condition-label">対象物資</div><div>レトルトご飯，飲料水</div>
+                    <div class="condition-label">想定避難率</div><div>50 %</div>
+                    <div class="condition-label">1人1日必要量</div><div>食料 1.5 kg，飲料水 3.0 kg</div>
+                    <div class="condition-label">配分可能量</div>
+                    <div>
+                        食料 <span id="food-available">-</span> kg<br>
+                        飲料水 <span id="water-available">-</span> kg
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" class="create-btn" onclick="runAllocation()">配分計画を実行する　›</button>
+
+    <div class="allocation-result-card" id="allocation-result-card">
+        <div class="section-title allocation-result-title">配分結果</div>
+        <div class="allocation-tabs">
+            <button type="button" class="allocation-tab active" data-kind="food" onclick="switchAllocationTab('food')">食料</button>
+            <button type="button" class="allocation-tab" data-kind="water" onclick="switchAllocationTab('water')">飲料水</button>
+        </div>
+        <div class="allocation-summary-row">
+            <div class="allocation-summary-box">
+                <span>最低充足率</span>
+                <strong id="minimum-rate">-</strong>
+            </div>
+            <div class="allocation-summary-box">
+                <span>配分総量</span>
+                <strong id="allocated-total">-</strong>
+            </div>
+        </div>
+        <div class="allocation-table-wrap">
+            <table class="allocation-table">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>避難所名</th>
+                        <th>必要量（kg）</th>
+                        <th>現在備蓄量（kg）</th>
+                        <th>配分量（kg）</th>
+                        <th>配分後充足率（%）</th>
+                    </tr>
+                </thead>
+                <tbody id="allocation-table-body">
+                    <tr class="empty-row"><td colspan="6">配分計画を実行すると結果を表示します。</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const EVACUATION_RATE = 0.50;
+const FOOD_KG_PER_PERSON_DAY = 1.5;
+const WATER_KG_PER_PERSON_DAY = 3.0;
+const RETORT_RICE_KG_PER_MEAL = 0.5;
+const WATER_KG_PER_BOTTLE = 0.5;
+
+let allocationShelters = [];
+let allocationHubs = [];
+let allocationPlan = null;
+let activeAllocationKind = "food";
+
+function numberOrNull(value) {
+    if (value === null || value === undefined || value === "") return null;
+    const n = Number(value);
+    return Number.isFinite(n) ? n : null;
+}
+
+async function readWorkbook(file) {
+    const buffer = await file.arrayBuffer();
+    return XLSX.read(buffer, {type: "array"});
+}
+
+function firstSheetRows(workbook) {
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    return XLSX.utils.sheet_to_json(sheet, {header: 1, defval: "", raw: true});
+}
+
+function parseShelterRows(rows) {
+    const items = [];
+    for (let i = 2; i < rows.length; i++) {
+        const row = rows[i] || [];
+        const name = String(row[0] ?? "").trim();
+        const lat = numberOrNull(row[1]);
+        const lng = numberOrNull(row[2]);
+        const capacity = numberOrNull(row[3]);
+        if (!name || lat === null || lng === null || capacity === null) continue;
+
+        items.push({
+            type: "shelter",
+            name,
+            lat,
+            lng,
+            capacity,
+            stock: {
+                retortRice: numberOrNull(row[4]),
+                riceCookie: numberOrNull(row[5]),
+                water500ml: numberOrNull(row[6]),
+                diaper: numberOrNull(row[7]),
+                toilet: numberOrNull(row[8]),
+                blanket: numberOrNull(row[9])
+            }
+        });
+    }
+    return items;
+}
+
+function parseHubRows(rows) {
+    const items = [];
+    for (let i = 2; i < rows.length; i++) {
+        const row = rows[i] || [];
+        const name = String(row[0] ?? "").trim();
+        const lat = numberOrNull(row[1]);
+        const lng = numberOrNull(row[2]);
+        if (!name || lat === null || lng === null) continue;
+
+        items.push({
+            type: "hub",
+            name,
+            lat,
+            lng,
+            category: String(row[3] ?? "").trim(),
+            stock: {
+                retortRice: numberOrNull(row[4]),
+                riceCookie: numberOrNull(row[5]),
+                water500ml: numberOrNull(row[6]),
+                diaper: numberOrNull(row[7]),
+                toilet: numberOrNull(row[8]),
+                blanket: numberOrNull(row[9])
+            }
+        });
+    }
+    return items;
+}
+
+function eligibleShelters() {
+    return allocationShelters.filter(item => {
+        const rice = numberOrNull(item?.stock?.retortRice);
+        const water = numberOrNull(item?.stock?.water500ml);
+        return rice !== null && water !== null && rice > 0 && water > 0;
+    });
+}
+
+function excludedShelters() {
+    return allocationShelters.filter(item => {
+        const rice = numberOrNull(item?.stock?.retortRice);
+        const water = numberOrNull(item?.stock?.water500ml);
+        return rice === null || water === null || rice <= 0 || water <= 0;
+    });
+}
+
+function hubAvailableKg() {
+    const riceMeals = allocationHubs.reduce((sum, hub) => sum + Math.max(0, numberOrNull(hub?.stock?.retortRice) || 0), 0);
+    const waterBottles = allocationHubs.reduce((sum, hub) => sum + Math.max(0, numberOrNull(hub?.stock?.water500ml) || 0), 0);
+    return {
+        food: riceMeals * RETORT_RICE_KG_PER_MEAL,
+        water: waterBottles * WATER_KG_PER_BOTTLE
+    };
+}
+
+function updateAllocationConditionDisplay() {
+    document.getElementById("eligible-count").textContent = allocationShelters.length ? eligibleShelters().length : "-";
+    document.getElementById("excluded-count").textContent = allocationShelters.length ? excludedShelters().length : "-";
+
+    const available = hubAvailableKg();
+    document.getElementById("food-available").textContent = allocationHubs.length ? formatKg(available.food) : "-";
+    document.getElementById("water-available").textContent = allocationHubs.length ? formatKg(available.water) : "-";
+}
+
+function formatKg(value) {
+    if (!Number.isFinite(Number(value))) return "-";
+    return Number(value).toLocaleString("ja-JP", {minimumFractionDigits: 1, maximumFractionDigits: 1});
+}
+
+function formatRate(value) {
+    if (!Number.isFinite(Number(value))) return "-";
+    return `${(Number(value) * 100).toFixed(1)} %`;
+}
+
+function buildCommodityRows(shelters, kind) {
+    return shelters.map((shelter, index) => {
+        const evacuees = Math.round(shelter.capacity * EVACUATION_RATE);
+        const demandKg = kind === "food"
+            ? evacuees * FOOD_KG_PER_PERSON_DAY
+            : evacuees * WATER_KG_PER_PERSON_DAY;
+        const stockKg = kind === "food"
+            ? (shelter.stock.retortRice || 0) * RETORT_RICE_KG_PER_MEAL
+            : (shelter.stock.water500ml || 0) * WATER_KG_PER_BOTTLE;
+        return {
+            index,
+            name: shelter.name,
+            capacity: shelter.capacity,
+            evacuees,
+            demandKg,
+            stockKg,
+            initialRate: demandKg > 0 ? stockKg / demandKg : 1,
+            allocationKg: 0,
+            finalRate: demandKg > 0 ? stockKg / demandKg : 1
+        };
+    });
+}
+
+function requiredForTarget(rows, targetRate) {
+    return rows.reduce((sum, row) => {
+        if (row.demandKg <= 0) return sum;
+        const targetStock = Math.min(row.demandKg, targetRate * row.demandKg);
+        return sum + Math.max(0, targetStock - row.stockKg);
+    }, 0);
+}
+
+function allocateToEqualize(rows, availableKg) {
+    const available = Math.max(0, Number(availableKg) || 0);
+    const totalShortage = requiredForTarget(rows, 1);
+
+    let targetRate = 1;
+    if (available < totalShortage - 1e-9) {
+        let low = 0;
+        let high = 1;
+        for (let i = 0; i < 70; i++) {
+            const mid = (low + high) / 2;
+            if (requiredForTarget(rows, mid) <= available) low = mid;
+            else high = mid;
+        }
+        targetRate = low;
+    }
+
+    let used = 0;
+    rows.forEach(row => {
+        if (row.demandKg <= 0) {
+            row.allocationKg = 0;
+            row.finalRate = 1;
+            return;
+        }
+        const targetStock = Math.min(row.demandKg, targetRate * row.demandKg);
+        row.allocationKg = Math.max(0, targetStock - row.stockKg);
+        used += row.allocationKg;
+        row.finalRate = Math.min(1, (row.stockKg + row.allocationKg) / row.demandKg);
+    });
+
+    const minimumRate = rows.length ? Math.min(...rows.map(row => Math.min(1, row.finalRate))) : 0;
+    return {rows, targetRate, minimumRate, usedKg: used, unusedKg: Math.max(0, available - used)};
+}
+
+async function bindAllocationFile({inputId, fileNameId, kind}) {
+    const input = document.getElementById(inputId);
+    const fileName = document.getElementById(fileNameId);
+
+    input.addEventListener("change", async function () {
+        if (!this.files || !this.files.length) return;
+        const file = this.files[0];
+        fileName.textContent = file.name;
+
+        try {
+            const workbook = await readWorkbook(file);
+            const rows = firstSheetRows(workbook);
+            const items = kind === "shelter" ? parseShelterRows(rows) : parseHubRows(rows);
+            if (!items.length) throw new Error("有効なデータ行がありません。");
+
+            if (kind === "shelter") {
+                allocationShelters = items;
+                sessionStorage.setItem("shelterData", JSON.stringify(items));
+                sessionStorage.setItem("shelterFileName", file.name);
+            } else {
+                allocationHubs = items;
+                sessionStorage.setItem("hubData", JSON.stringify(items));
+                sessionStorage.setItem("hubFileName", file.name);
+            }
+
+            sessionStorage.removeItem("allocationPlan");
+            allocationPlan = null;
+            resetAllocationResult();
+            updateAllocationConditionDisplay();
+        } catch (error) {
+            console.error(error);
+            fileName.textContent = "読み込みエラー";
+            alert("Excelデータを読み込めませんでした。データ形式を確認してください。");
+        }
+    });
+}
+
+function resetAllocationResult() {
+    document.getElementById("minimum-rate").textContent = "-";
+    document.getElementById("allocated-total").textContent = "-";
+    document.getElementById("allocation-table-body").innerHTML = '<tr class="empty-row"><td colspan="6">配分計画を実行すると結果を表示します。</td></tr>';
+}
+
+function runAllocation() {
+    if (!allocationShelters.length) {
+        alert("避難所データを選択してください。");
+        return;
+    }
+    if (!allocationHubs.length) {
+        alert("輸送拠点データを選択してください。");
+        return;
+    }
+
+    const eligible = eligibleShelters();
+    const excluded = excludedShelters();
+    if (!eligible.length) {
+        alert("レトルトご飯と飲料水の備蓄量が0より大きい避難所を確認できませんでした。");
+        return;
+    }
+
+    const available = hubAvailableKg();
+    if (available.food <= 0 || available.water <= 0) {
+        alert("輸送拠点データのレトルトご飯と飲料水の備蓄量を入力してください。");
+        return;
+    }
+
+    const food = allocateToEqualize(buildCommodityRows(eligible, "food"), available.food);
+    const water = allocateToEqualize(buildCommodityRows(eligible, "water"), available.water);
+
+    allocationPlan = {
+        version: "v15",
+        createdAt: new Date().toISOString(),
+        assumptions: {
+            evacuationRate: EVACUATION_RATE,
+            foodKgPerPersonDay: FOOD_KG_PER_PERSON_DAY,
+            waterKgPerPersonDay: WATER_KG_PER_PERSON_DAY,
+            retortRiceKgPerMeal: RETORT_RICE_KG_PER_MEAL,
+            waterKgPerBottle: WATER_KG_PER_BOTTLE
+        },
+        counts: {
+            total: allocationShelters.length,
+            eligible: eligible.length,
+            excluded: excluded.length
+        },
+        excludedShelters: excluded.map(item => item.name),
+        availableKg: available,
+        food,
+        water
+    };
+
+    sessionStorage.setItem("allocationPlan", JSON.stringify(allocationPlan));
+    activeAllocationKind = "food";
+    document.querySelectorAll(".allocation-tab").forEach(button => {
+        button.classList.toggle("active", button.dataset.kind === "food");
+    });
+    renderAllocationResult();
+}
+
+function switchAllocationTab(kind) {
+    activeAllocationKind = kind;
+    document.querySelectorAll(".allocation-tab").forEach(button => {
+        button.classList.toggle("active", button.dataset.kind === kind);
+    });
+    renderAllocationResult();
+}
+
+function renderAllocationResult() {
+    if (!allocationPlan) {
+        resetAllocationResult();
+        return;
+    }
+
+    const result = allocationPlan[activeAllocationKind];
+    document.getElementById("minimum-rate").textContent = formatRate(result.minimumRate);
+    document.getElementById("allocated-total").textContent = `${formatKg(result.usedKg)} kg`;
+
+    const rows = result.rows;
+    const html = rows.map((row, index) => `
+        <tr>
+            <td>${index + 1}</td>
+            <td class="name-cell">${escapeHtml(row.name)}</td>
+            <td>${formatKg(row.demandKg)}</td>
+            <td>${formatKg(row.stockKg)}</td>
+            <td>${formatKg(row.allocationKg)}</td>
+            <td class="rate-cell">${(Math.min(1, row.finalRate) * 100).toFixed(1)}</td>
+        </tr>`).join("");
+    document.getElementById("allocation-table-body").innerHTML = html || '<tr class="empty-row"><td colspan="6">結果がありません。</td></tr>';
+}
+
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function restoreAllocationState() {
+    try {
+        allocationShelters = JSON.parse(sessionStorage.getItem("shelterData") || "[]");
+        allocationHubs = JSON.parse(sessionStorage.getItem("hubData") || "[]");
+        allocationPlan = JSON.parse(sessionStorage.getItem("allocationPlan") || "null");
+    } catch (error) {
+        allocationShelters = [];
+        allocationHubs = [];
+        allocationPlan = null;
+    }
+
+    const shelterFileName = sessionStorage.getItem("shelterFileName");
+    const hubFileName = sessionStorage.getItem("hubFileName");
+    if (shelterFileName) document.getElementById("allocation-shelter-file-name").textContent = shelterFileName;
+    if (hubFileName) document.getElementById("allocation-hub-file-name").textContent = hubFileName;
+
+    updateAllocationConditionDisplay();
+    if (allocationPlan) renderAllocationResult();
+}
+
+bindAllocationFile({
+    inputId: "allocation-shelter-file",
+    fileNameId: "allocation-shelter-file-name",
+    kind: "shelter"
+});
+
+bindAllocationFile({
+    inputId: "allocation-hub-file",
+    fileNameId: "allocation-hub-file-name",
+    kind: "hub"
+});
+
+restoreAllocationState();
+</script>
+{% endblock %}
