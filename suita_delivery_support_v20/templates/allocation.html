@@ -87,7 +87,7 @@
                 <select id="allocation-sort" onchange="renderAllocationResult()">
                     <option value="rate-asc">低い順</option>
                     <option value="rate-desc">高い順</option>
-                    <option value="name-asc">避難所名順</option>
+                    <option value="name-asc" selected>避難所名順</option>
                 </select>
             </div>
         </div>
@@ -117,7 +117,7 @@
                     </div>
                 </div>
             </div>
-            <p class="allocation-v20-chart-note">棒の下の番号（1～<span id="allocation-v20-chart-count">-</span>）は避難所の番号です。棒や番号にカーソルを合わせると、避難所名と充足率を表示します。</p>
+            <p class="allocation-v20-chart-note">棒の下の番号（1～<span id="allocation-v20-chart-count">-</span>）は、避難所名順で付けた固定番号です。並べ替えても避難所の番号は変わりません。棒や番号にカーソルを合わせると、避難所名と充足率を表示します。</p>
             <div class="allocation-v20-tooltip" id="allocation-v20-tooltip" role="tooltip" hidden></div>
         </div>
 
@@ -539,6 +539,8 @@ function runAllocation() {
 
     activeAllocationKind = "food";
     activeAllocationStageIndex = 0;
+    document.getElementById("allocation-sort").value = "name-asc";
+    switchAllocationView("chart");
     document.querySelectorAll(".allocation-tab").forEach(button => {
         button.classList.toggle("active", button.dataset.kind === "food");
     });
@@ -606,14 +608,14 @@ function renderAllocationTableHead() {
         </tr>`;
 }
 
-function renderAllocationTable(rows, stageIndex) {
-    const html = rows.map((row, index) => {
+function renderAllocationTable(rows, stageIndex, shelterNumbers) {
+    const html = rows.map(row => {
         const openingStock = row.stageOpeningStocks[stageIndex] ?? row.initialStockKg;
         const beforeRate = row.demandKg > 0 ? Math.min(1, openingStock / row.demandKg) : 1;
         const allocation = row.stageAllocations[stageIndex] ?? 0;
         const afterRate = row.stageRates[stageIndex] ?? beforeRate;
         return `<tr>
-                <td>${index + 1}</td>
+                <td>${shelterNumbers.get(row.index)}</td>
                 <td class="name-cell">${escapeHtml(row.name)}</td>
                 <td>${Number(row.evacuees).toLocaleString("ja-JP")}</td>
                 <td>${formatKg(row.demandKg)}</td>
@@ -626,8 +628,8 @@ function renderAllocationTable(rows, stageIndex) {
     document.getElementById("allocation-table-body").innerHTML = html || '<tr class="empty-row"><td colspan="8">結果がありません。</td></tr>';
 }
 
-// 棒の並びは表と同じ。100避難所すべてを一画面に収めるため、横軸は番号で表示する。
-function renderAllocationBarChart(rows, stageIndex) {
+// 番号は避難所名順で固定。棒の位置だけが充足率順の並べ替えで変わる。
+function renderAllocationBarChart(rows, stageIndex, shelterNumbers) {
     const track = document.getElementById("allocation-v20-chart-track");
     document.getElementById("allocation-v20-tooltip").hidden = true;
     document.getElementById("allocation-v20-chart-count").textContent = rows.length;
@@ -636,7 +638,8 @@ function renderAllocationBarChart(rows, stageIndex) {
         return;
     }
 
-    const bars = rows.map((row, index) => {
+    const bars = rows.map(row => {
+        const shelterNumber = shelterNumbers.get(row.index);
         const openingStock = row.stageOpeningStocks[stageIndex] ?? row.initialStockKg;
         const beforeRate = row.demandKg > 0 ? Math.min(1, openingStock / row.demandKg) : 1;
         const allocationKg = row.stageAllocations[stageIndex] ?? 0;
@@ -644,7 +647,7 @@ function renderAllocationBarChart(rows, stageIndex) {
         const beforePct = Math.max(0, Math.min(100, beforeRate * 100));
         const afterPct = Math.max(0, Math.min(100, afterRate * 100));
         const detail = [
-            `No.${index + 1}　${row.name}`,
+            `No.${shelterNumber}　${row.name}`,
             `配分前：${formatRate(beforeRate)}　配分後：${formatRate(afterRate)}`,
             `避難者数：${Number(row.evacuees).toLocaleString("ja-JP")} 人`,
             `必要量：${formatKg(row.demandKg)} kg　今回配分量：${formatKg(allocationKg)} kg`
@@ -655,7 +658,7 @@ function renderAllocationBarChart(rows, stageIndex) {
                     <span class="allocation-v20-bar before" style="height:${beforePct.toFixed(5)}%"></span>
                     <span class="allocation-v20-bar after" style="height:${afterPct.toFixed(5)}%"></span>
                 </div>
-                <span class="allocation-v20-index">${index + 1}</span>
+                <span class="allocation-v20-index">${shelterNumber}</span>
             </div>`;
     });
     track.innerHTML = `<div class="allocation-v20-plot" style="--shelter-count:${rows.length}">${bars.join("")}</div>`;
@@ -739,19 +742,27 @@ function renderAllocationResult() {
         </div>
     ` : "";
 
-    const sortMode = document.getElementById("allocation-sort")?.value || "rate-asc";
+    const sortMode = document.getElementById("allocation-sort")?.value || "name-asc";
+    // 同じ避難所は食料・飲料水・すべての配分回で同じ番号とする。
+    // 同名施設があっても読込時の index で別々に識別する。
+    const shelterNumbers = new Map(
+        [...result.rows]
+            .sort((a, b) => a.name.localeCompare(b.name, "ja") || a.index - b.index)
+            .map((row, index) => [row.index, index + 1])
+    );
     const rows = [...result.rows];
     rows.sort((a, b) => {
         const aRate = a.stageRates[activeAllocationStageIndex] ?? 0;
         const bRate = b.stageRates[activeAllocationStageIndex] ?? 0;
-        if (sortMode === "rate-desc") return bRate - aRate || a.name.localeCompare(b.name, "ja");
-        if (sortMode === "name-asc") return a.name.localeCompare(b.name, "ja");
-        return aRate - bRate || a.name.localeCompare(b.name, "ja");
+        const byName = a.name.localeCompare(b.name, "ja") || a.index - b.index;
+        if (sortMode === "rate-desc") return bRate - aRate || byName;
+        if (sortMode === "name-asc") return byName;
+        return aRate - bRate || byName;
     });
 
     renderAllocationTableHead();
-    renderAllocationTable(rows, activeAllocationStageIndex);
-    renderAllocationBarChart(rows, activeAllocationStageIndex);
+    renderAllocationTable(rows, activeAllocationStageIndex, shelterNumbers);
+    renderAllocationBarChart(rows, activeAllocationStageIndex, shelterNumbers);
 }
 
 function restoreAllocationState() {
