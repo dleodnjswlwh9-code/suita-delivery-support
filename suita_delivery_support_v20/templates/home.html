@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}ホーム｜救援物資配送支援システム{% endblock %}
+
+{% block content %}
+<div class="home-page">
+    <section class="hero-panel hero-white">
+        <div class="hero-title-wrap">
+            <div class="hero-main-title">救援物資配送支援システム</div>
+        </div>
+    </section>
+
+    <section class="home-menu-grid home-menu-grid-four">
+        <a class="home-menu-card blue" href="{{ url_for('allocation') }}">
+            <div class="home-card-copy">
+                <div class="home-card-title">配分計画</div>
+            </div>
+            <div class="home-card-arrow">›</div>
+        </a>
+
+        <a class="home-menu-card green" href="{{ url_for('plan') }}">
+            <div class="home-card-copy">
+                <div class="home-card-title">配送計画</div>
+            </div>
+            <div class="home-card-arrow">›</div>
+        </a>
+
+        <div class="home-menu-card orange">
+            <div class="home-card-copy">
+                <div class="home-card-title">物資輸送経路</div>
+            </div>
+            <div class="home-card-arrow">›</div>
+        </div>
+
+        <div class="home-menu-card purple">
+            <div class="home-card-copy">
+                <div class="home-card-title">結果の表示</div>
+            </div>
+            <div class="home-card-arrow">›</div>
+        </div>
+    </section>
+</div>
+{% endblock %}
