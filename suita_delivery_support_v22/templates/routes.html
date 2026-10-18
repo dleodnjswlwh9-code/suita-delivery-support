@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}物資輸送経路｜救援物資配送支援システム{% endblock %}
+{% block content %}
+<section class="status-page">
+<h1>物資輸送経路</h1>
+<div class="status-page-card">
+<h2>配送経路の最適化は現在準備中です</h2>
+<p>このページは今後のP2（配送経路の最適化）を表示するための画面です。現在のv23.3では車両別の最適経路は計算されません。</p>
+<p>緊急交通路の表示と配送条件の入力は「配送計画」から確認できます。</p>
+<a class="status-primary-link" href="{{ url_for('plan') }}">配送計画へ移動 →</a>
+</div>
+</section>
+{% endblock %}
