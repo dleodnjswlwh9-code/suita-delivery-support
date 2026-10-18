@@ -1,0 +1,1517 @@
+{% extends "base.html" %}
+{% block title %}配分計画｜救援物資配送支援システム{% endblock %}
+
+{% block content %}
+<section class="allocation-page">
+    <h1>配分計画</h1>
+
+    <div class="allocation-v16-grid allocation-v23-four-panel">
+        <div class="upload-card allocation-shelter-upload">
+            <div class="section-title">Excelデータの読込</div>
+            <div class="allocation-file-group">
+                <div class="allocation-file-label">① 避難所データ</div>
+                <div class="file-row">
+                    <label class="file-select-btn" for="allocation-shelter-file">ファイルを選択</label>
+                    <input id="allocation-shelter-file" type="file" accept=".xlsx">
+                    <span id="allocation-shelter-file-name" class="file-name">未選択</span>
+                </div>
+                <small>名称・地域・位置・収容人数・備蓄量</small>
+            </div>
+            <div class="allocation-file-group">
+                <div class="allocation-file-label">② 希求水準データ</div>
+                <div class="file-row">
+                    <label class="file-select-btn" for="allocation-aspiration-file">ファイルを選択</label>
+                    <input id="allocation-aspiration-file" type="file" accept=".xlsx">
+                    <span id="allocation-aspiration-file-name" class="file-name">未選択</span>
+                </div>
+                <small>食料・飲料水の希求水準（避難所名で照合）</small>
+            </div>
+            <div class="allocation-upload-status" id="allocation-upload-status">避難所Excelと希求水準Excelを選択してください。</div>
+        </div>
+        <div class="allocation-condition-card allocation-general-condition">
+            <div class="section-title">配分条件</div>
+            <div class="condition-table allocation-v16-condition-table">
+                <div class="condition-label"><span class="v19-help-label">対象避難所<span class="condition-help" tabindex="0" aria-label="対象避難所の説明">?<span class="condition-tooltip">食料と飲料水の備蓄量が両方とも0ではない避難所。</span></span></span></div><div><span id="eligible-count">-</span></div>
+                <div class="condition-label"><span class="v19-help-label">除外避難所<span class="condition-help" tabindex="0" aria-label="除外避難所の説明">?<span class="condition-tooltip">食料または飲料水の備蓄量が0で、データが未整備の避難所。</span></span></span></div><div><span id="excluded-count">-</span></div>
+                <div class="condition-label">対象物資</div><div>レトルトご飯，飲料水</div>
+                <div class="condition-label"><span class="v19-help-label">必要量基準<span class="condition-help" tabindex="0" aria-label="必要量基準の説明">?<span class="condition-tooltip">1人が1日に必要とする食料と飲料水の想定量。</span></span></span></div>
+                <div class="need-lines">
+                    <span>食料&nbsp; 1.5 kg</span>
+                    <span>飲料水&nbsp; 3.0 kg</span>
+                </div>
+            </div>
+        </div>
+        <div class="allocation-condition-card allocation-method-condition">
+            <div class="section-title">配分方法</div>
+            <div class="v23-p1-setup">
+                <label for="allocation-method">計算方法</label>
+                <select id="allocation-method" onchange="changeAllocationMethod()">
+                    <option value="p1" selected>希求水準に基づく配分（P1・試算）</option>
+                    <option value="legacy">従来方式（充足率に基づく配分）</option>
+                </select>
+                <div class="v23-p1-options" id="v23-p1-options">
+                    <div class="v23-target-status" id="v23-target-status">希求水準：Excel未読込</div>
+                    <label for="p1-rho">公平性と総合達成度の係数 ρ</label>
+                    <input type="number" id="p1-rho" value="0.01" min="0.000001" max="1" step="0.001" onchange="invalidateAllocationPlan()">
+                    <small>希求水準はExcelの「避難所データ」シートから読み込みます。ρ=0.01は比較実験用の仮設定です。</small>
+                </div>
+            </div>
+        </div>
+        <div class="allocation-stage-card">
+            <div class="stage-card-heading">
+                <div class="section-title">輸送拠点物資量の設定</div>
+                <div class="stage-unit">単位：kg</div>
+            </div>
+            <div class="stage-table">
+                <div class="stage-header stage-label-cell"></div>
+                <div class="stage-header">食料（レトルトご飯）</div>
+                <div class="stage-header">飲料水</div>
+                <div id="allocation-stage-list" class="stage-list"></div>
+            </div>
+            <div class="stage-action-row">
+                <button type="button" class="stage-remove-btn" id="stage-remove-btn" onclick="removeAllocationStage()">－ 配分回数を削除</button>
+                <button type="button" class="stage-add-btn" onclick="addAllocationStage()">＋ 配分回数を追加</button>
+            </div>
+        </div>
+    </div>
+
+    <p class="allocation-v21-model-note">地域別想定人数はアプリ内の吹田市備蓄計画の数値を使用します。在宅避難者相当数を1～3次に均等に加えるのは本研究の仮定です。P1の各回の配分は配送済みではなく計画上の参考値です。</p>
+    <button type="button" id="allocation-run-btn" class="create-btn" onclick="runAllocation()">配分計画を実行する　›</button>
+
+    <div class="allocation-result-card" id="allocation-result-card">
+        <div class="allocation-result-title-row">
+            <div class="section-title allocation-result-title">配分結果</div>
+            <div class="allocation-view-toggle" role="group" aria-label="配分結果の表示形式">
+                <button type="button" class="allocation-view-button active" id="allocation-view-table" onclick="switchAllocationView('table')" aria-pressed="true">表</button>
+                <button type="button" class="allocation-view-button" id="allocation-view-chart" onclick="switchAllocationView('chart')" aria-pressed="false">グラフ</button>
+            </div>
+        </div>
+
+        <div id="v23-result-info" class="v23-result-info" hidden></div>
+        <div class="allocation-summary-row allocation-summary-row-four">
+            <div class="allocation-summary-box">
+                <span>対象避難所数</span>
+                <strong id="summary-eligible-count">-</strong>
+            </div>
+            <div class="allocation-summary-box">
+                <span>除外避難所数</span>
+                <strong id="summary-excluded-count">-</strong>
+            </div>
+            <div class="allocation-summary-box rate-summary-box">
+                <span id="summary-food-label">食料の1次最低<span class="v19-help-label">充足率<span class="condition-help" tabindex="0" aria-label="充足率の説明">?<span class="condition-tooltip">必要量に対して、備蓄量と累計配分量の合計が占める割合。</span></span></span></span>
+                <strong id="summary-food-rate">-</strong>
+            </div>
+            <div class="allocation-summary-box rate-summary-box">
+                <span id="summary-water-label">飲料水の1次最低<span class="v19-help-label">充足率<span class="condition-help" tabindex="0" aria-label="充足率の説明">?<span class="condition-tooltip">必要量に対して、備蓄量と累計配分量の合計が占める割合。</span></span></span></span>
+                <strong id="summary-water-rate">-</strong>
+            </div>
+        </div>
+
+        <div class="allocation-result-workspace">
+            <div class="allocation-result-main">
+        <div class="allocation-result-toolbar">
+            <div class="allocation-tabs">
+                <button type="button" class="allocation-tab active" data-kind="food" onclick="switchAllocationTab('food')">食料</button>
+                <button type="button" class="allocation-tab" data-kind="water" onclick="switchAllocationTab('water')">飲料水</button>
+            </div>
+            <div class="allocation-sort-control">
+                <span><span class="v19-help-label">充足率<span class="condition-help" tabindex="0" aria-label="充足率の説明">?<span class="condition-tooltip">必要量に対して、備蓄量と累計配分量の合計が占める割合。</span></span></span></span>
+                <select id="allocation-sort" onchange="renderAllocationResult()">
+                    <option value="rate-asc">低い順</option>
+                    <option value="rate-desc">高い順</option>
+                    <option value="name-asc" selected>避難所名順</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="allocation-stage-tabs" id="allocation-stage-tabs"></div>
+        <div class="allocation-population-summary" id="allocation-population-summary" hidden></div>
+        <div class="stage-minimum-summary" id="stage-minimum-summary"></div>
+        <div id="v23-f1-comparison" class="v23-f1-comparison" hidden></div>
+
+        <!-- 表と縦棒グラフを表示切替。既存の計算・結果選択は共有する。 -->
+        <div class="allocation-v20-chart-card" id="allocation-chart-view">
+            <div class="allocation-v20-chart-heading">
+                <strong>避難所別充足率（配分前・配分後）</strong>
+                <div class="allocation-v20-legend" aria-label="グラフの凡例">
+                    <span><i class="allocation-v20-legend-mark before"></i>配分前</span>
+                    <span><i class="allocation-v20-legend-mark after"></i>配分後</span>
+                </div>
+            </div>
+            <div class="allocation-v20-chart-layout" aria-label="避難所別充足率の縦棒グラフ">
+                <div class="allocation-v20-chart-axis">
+                    <div class="allocation-v20-axis-title">充足率（%）</div>
+                    <div class="allocation-v20-axis-ticks" aria-hidden="true">
+                        <span>100</span><span>80</span><span>60</span><span>40</span><span>20</span><span>0</span>
+                    </div>
+                </div>
+                <div class="allocation-v20-chart-canvas" id="allocation-v20-chart-canvas">
+                    <div class="allocation-v20-chart-track" id="allocation-v20-chart-track">
+                        <p class="allocation-v20-empty">配分計画を実行すると結果を表示します。</p>
+                    </div>
+                </div>
+            </div>
+            <p class="allocation-v20-chart-note">棒の下の番号（1～<span id="allocation-v20-chart-count">-</span>）は、避難所名順で付けた固定番号です。並べ替えても避難所の番号は変わりません。棒や番号にカーソルを合わせると、避難所名と充足率を表示します。</p>
+            <div class="allocation-v20-tooltip" id="allocation-v20-tooltip" role="tooltip" hidden></div>
+        </div>
+
+        <div class="allocation-table-wrap allocation-v16-table-wrap" id="allocation-table-view">
+            <table class="allocation-table allocation-v16-table">
+                <thead id="allocation-table-head"></thead>
+                <tbody id="allocation-table-body">
+                    <tr class="empty-row"><td colspan="8">配分計画を実行すると結果を表示します。</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+            </div>
+            <aside class="allocation-result-map-column" aria-label="配分地図">
+        <div class="allocation-v20-chart-card allocation-map-card" id="allocation-map-view">
+            <div class="allocation-v20-chart-heading">
+                <strong>避難所別必要量・累計配分量（地図）</strong>
+                <div class="allocation-map-legend" aria-label="地図の凡例">
+                    <span><i class="allocation-map-legend-ring"></i>必要量（円の面積）</span>
+                    <span><i class="allocation-map-legend-sector"></i>累計配分量（角度）</span>
+                    <span><i class="allocation-map-legend-center"></i>避難所位置</span>
+                </div>
+            </div>
+            {% if api_key %}
+            <div id="allocation-google-map"></div>
+            {% else %}
+            <div class="api-warning">
+                Google Maps APIキーが設定されていません。RenderのEnvironmentまたはPowerShellで
+                <code>GOOGLE_MAPS_API_KEY</code>
+                を設定してください。
+            </div>
+            {% endif %}
+            <p class="allocation-v20-chart-note">基準：必要量1,000 kg＝半径20 px（円の面積が必要量に比例）。紫色の扇形は「累計配分量÷選択期の必要量」を0～360°で表示。小さな赤点は避難所の位置です。選択回に配分がない避難所と対象外避難所は表示しません。地図の拡大・縮小でも記号の画面上のサイズを維持します。</p>
+        </div>
+            </aside>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const FOOD_KG_PER_PERSON_DAY = 1.5;
+const WATER_KG_PER_PERSON_DAY = 3.0;
+const RETORT_RICE_KG_PER_MEAL = 0.5;
+const WATER_KG_PER_BOTTLE = 0.5;
+const HOURS_PER_STAGE = 24;
+
+let allocationShelters = [];
+// 吹田市備蓄計画（令和7年3月）の6地域の公式数値。二つ目のExcel読込は不要。
+const EMBEDDED_REGIONAL_COUNTS = {{ embedded_regions | tojson }};
+let allocationRegionalCounts = EMBEDDED_REGIONAL_COUNTS;
+let allocationPlan = null;
+let allocationTargetLoaded = false;
+let aspirationWorkbookCache = null;
+let activeAllocationKind = "food";
+let activeAllocationStageIndex = 0;
+let activeAllocationView = "table";
+let allocationMap = null;
+let allocationMapInfoWindow = null;
+let allocationMapInitialized = false;
+let allocationMapHasFitted = false;
+let allocationPieOverlays = [];
+const ALLOCATION_MAP_REFERENCE_KG = 1000;
+const ALLOCATION_MAP_REFERENCE_RADIUS_PX = 20;
+const ALLOCATION_MAP_MIN_RADIUS_PX = 6;
+const ALLOCATION_MAP_MAX_RADIUS_PX = 54;
+const ALLOCATION_MAP_CENTER = {lat: 34.7594, lng: 135.5166};
+let allocationStages = [
+    {foodKg: "", waterKg: ""},
+    {foodKg: "", waterKg: ""},
+    {foodKg: "", waterKg: ""}
+];
+
+function numberOrNull(value) {
+    if (value === null || value === undefined || value === "") return null;
+    const n = Number(value);
+    return Number.isFinite(n) ? n : null;
+}
+
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function formatKg(value) {
+    if (!Number.isFinite(Number(value))) return "-";
+    return Number(value).toLocaleString("ja-JP", {minimumFractionDigits: 1, maximumFractionDigits: 1});
+}
+
+function formatRate(value) {
+    if (!Number.isFinite(Number(value))) return "-";
+    return `${(Math.min(1, Math.max(0, Number(value))) * 100).toFixed(1)} %`;
+}
+
+async function readWorkbook(file) {
+    if (!file || !/\.xlsx$/i.test(file.name)) {
+        throw new Error("Excelファイルは .xlsx 形式を選択してください。");
+    }
+    const form = new FormData();
+    form.append("file", file);
+    const response = await fetch("/api/parse-excel", {method: "POST", body: form});
+    let payload;
+    try { payload = await response.json(); }
+    catch (error) { throw new Error("Excel読み込みAPIから応答がありません。サーバーの設定を確認してください。"); }
+    if (!response.ok) throw new Error(payload.error || "Excelファイルの読み込みに失敗しました。");
+    const names = [];
+    const sheets = {};
+    for (const entry of payload.sheets || []) {
+        names.push(entry.name);
+        sheets[entry.name] = entry.rows;
+    }
+    if (!names.length) throw new Error("読み込めるシートがありません。");
+    return {SheetNames: names, Sheets: sheets};
+}
+
+// すべての画面で同じExcel読込経路を使用する。
+function sheetRows(sheet) {
+    return Array.isArray(sheet) ? sheet : [];
+}
+
+
+function firstSheetRows(workbook) {
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    return sheetRows(sheet);
+}
+
+function parseShelterRows(rows) {
+    // v21.1: 旧形式（名称がA列）・地域付き形式（地域がA列）の双方に対応する。
+    // 列位置を固定せず、見出しから検索する。見出しが2行の場合も対応。
+    const normalizeHeader = value => String(value ?? "")
+        .normalize("NFKC")
+        .replace(/[\s（）()・]/g, "")
+        .toLowerCase();
+    const headerIndex = rows.findIndex((row, index) => {
+        if (index > 15 || !Array.isArray(row)) return false;
+        const labels = row.map(normalizeHeader);
+        return labels.some(value => value === "名称" || value === "避難所名") &&
+               labels.some(value => value.includes("緯度")) &&
+               labels.some(value => value.includes("経度"));
+    });
+    if (headerIndex < 0) throw new Error("名称・緯度・経度の見出しが見つかりません。");
+
+    const headers = rows[headerIndex].map(normalizeHeader);
+    const subHeaders = (rows[headerIndex + 1] || []).map(normalizeHeader);
+    const columnOf = (labels, terms) => labels.findIndex(value => terms.some(term => value.includes(term)));
+    const nameCol = columnOf(headers, ["名称", "避難所名"]);
+    const latCol = columnOf(headers, ["緯度"]);
+    const lngCol = columnOf(headers, ["経度"]);
+    const capacityCol = columnOf(headers, ["収容可能人数", "収容人数", "収容定員"]);
+    const regionCol = columnOf(headers, ["地域"]);
+    if ([nameCol, latCol, lngCol, capacityCol].some(value => value < 0)) {
+        throw new Error("避難所名・緯度・経度・収容可能人数の列を確認してください。");
+    }
+
+    const findStockColumn = (searchTerms, fallbackOffset) => {
+        const first = columnOf(headers, searchTerms);
+        const second = columnOf(subHeaders, searchTerms);
+        return first >= 0 ? first : second >= 0 ? second : capacityCol + fallbackOffset;
+    };
+    const riceCol = findStockColumn(["レトルトご飯", "レトルト米飯"], 1);
+    const cookieCol = findStockColumn(["ライスクッキー"], 2);
+    const waterCol = findStockColumn(["飲料水500ml", "飲料水"], 3);
+    const diaperCol = findStockColumn(["乳児用紙おむつ", "紙おむつ"], 4);
+    const toiletCol = findStockColumn(["簡易トイレ"], 5);
+    const blanketCol = findStockColumn(["毛布"], 6);
+
+    // 見出しの直後が「レトルトご飯（食）」などの2段目見出しなら読み飛ばす。
+    const nextLat = (rows[headerIndex + 1] || [])[latCol];
+    const hasSecondHeader = subHeaders.some(value => value.includes("レトルトご飯") || value.includes("飲料水")) &&
+        (nextLat === "" || nextLat === null || nextLat === undefined || !Number.isFinite(Number(nextLat)));
+    const dataStart = headerIndex + (hasSecondHeader ? 2 : 1);
+    const items = [];
+    for (let i = dataStart; i < rows.length; i++) {
+        const row = rows[i] || [];
+        const name = String(row[nameCol] ?? "").trim();
+        const lat = numberOrNull(row[latCol]);
+        const lng = numberOrNull(row[lngCol]);
+        const capacity = numberOrNull(row[capacityCol]);
+        if (!name || lat === null || lng === null || capacity === null) continue;
+        if (lat < -90 || lat > 90 || lng < -180 || lng > 180) continue;
+        items.push({
+            type: "shelter",
+            sourceIndex: items.length,
+            name,
+            region: regionCol < 0 ? "" : String(row[regionCol] ?? "").trim(),
+            lat,
+            lng,
+            capacity,
+            evacuees: capacity,
+            stock: {
+                retortRice: numberOrNull(row[riceCol]),
+                riceCookie: numberOrNull(row[cookieCol]),
+                water500ml: numberOrNull(row[waterCol]),
+                diaper: numberOrNull(row[diaperCol]),
+                toilet: numberOrNull(row[toiletCol]),
+                blanket: numberOrNull(row[blanketCol])
+            }
+        });
+    }
+    if (!items.length) throw new Error("読み込める避難所データがありません。");
+    return items;
+}
+
+// v23: 既存の地域別台帳と希求水準シートを1回のアップロードで名称照合。
+function normalizeShelterKey(name) {
+    return String(name ?? "").normalize("NFKC").replace(/[\s　]+/g, "").trim();
+}
+function readAspirationSheet(workbook, shelters) {
+    const aspirationSheet = workbook.SheetNames.find(name => name === "避難所データ");
+    if (!aspirationSheet) return false; // 従来形式Excelは旧方式で利用可能
+    const rows = sheetRows(workbook.Sheets[aspirationSheet]);
+    const normalize = v => String(v ?? "").normalize("NFKC").replace(/[\s　（）()]/g, "");
+    const headerIndex = rows.findIndex((row,i) => i < 15 && row.some(v => normalize(v).includes("希求水準")));
+    if (headerIndex < 0) return false;
+    const headers = rows[headerIndex].map(normalize);
+    const nameCol = headers.findIndex(x => x === "名称" || x === "避難所名");
+    const foodCol = headers.findIndex(x => x.includes("食料") && x.includes("希求水準"));
+    const waterCol = headers.findIndex(x => x.includes("飲料水") && x.includes("希求水準"));
+    if ([nameCol,foodCol,waterCol].some(v => v < 0)) {
+        throw new Error("『避難所データ』シートの名称・食料の希求水準・飲料水の希求水準の列を確認してください。");
+    }
+    const rateByName = new Map();
+    for (let i=headerIndex+1;i<rows.length;i++) {
+        const row = rows[i];
+        const key = normalizeShelterKey(row[nameCol]);
+        if (!key) continue;
+        if (rateByName.has(key)) throw new Error(`希求水準シートの避難所名が重複しています：${row[nameCol]}`);
+        const food = numberOrNull(row[foodCol]);
+        const water = numberOrNull(row[waterCol]);
+        if (food === null || water === null || food < 0 || food >= 100 || water < 0 || water >= 100) {
+            throw new Error(`希求水準は0%以上100%未満の数値で指定してください：${row[nameCol]}`);
+        }
+        rateByName.set(key, {food:food/100, water:water/100});
+    }
+    const missing=[];
+    for (const item of shelters) {
+        const row=rateByName.get(normalizeShelterKey(item.name));
+        if (!row) missing.push(item.name);
+        else item.targetRates={...row};
+    }
+    if (missing.length || rateByName.size !== shelters.length) {
+        throw new Error(`希求水準と避難所台帳が一致しません（不足${missing.length}件・余剰${Math.max(0,rateByName.size-(shelters.length-missing.length))}件）。${missing[0] || ""}`);
+    }
+    return true;
+}
+
+// 地域別データはアプリ内部に固定。避難所Excelから希求水準も読み込む。
+function normalizeAllocationRegion(value) {
+    const key = String(value ?? "").normalize("NFKC").replace(/[\s　]/g, "");
+    if (key.includes("JR以南")) return "JR以南";
+    if (key.includes("片山") && key.includes("岸部")) return "片山・岸部";
+    if (key.includes("豊津") && key.includes("南吹田")) return "豊津・江坂・南吹田";
+    if (key.includes("千里山") && key.includes("佐井寺")) return "千里山・佐井寺";
+    if (key.includes("山田") && key.includes("千里丘")) return "山田・千里丘";
+    if (key.includes("千里ニュータウン") || key.includes("千里NT")) return "千里ニュータウン";
+    return "";
+}
+
+function readAllocationWorkbook(workbook) {
+    let shelters = null;
+    for (const sheetName of workbook.SheetNames) {
+        const rows = sheetRows(workbook.Sheets[sheetName]);
+        try { shelters = parseShelterRows(rows); break; } catch (error) { /* 次のシートを確認 */ }
+    }
+    if (!shelters?.length) throw new Error("避難所データ（地域・名称・緯度・経度・収容可能人数・備蓄量）が見つかりません。");
+    const aspirationLoaded = false; // 希求水準は2番目のファイル入力から別途読み込む
+    const regional = EMBEDDED_REGIONAL_COUNTS;
+    const group = new Map();
+    shelters.forEach(shelter => {
+        const region = normalizeAllocationRegion(shelter.region);
+        if (!region) throw new Error(`地域を判別できません：${shelter.name}（${shelter.region || "地域欄なし"}）`);
+        shelter.regionKey = region;
+        group.set(region, (group.get(region) || 0) + 1);
+    });
+    for (const region of Object.keys(regional)) {
+        if (!group.has(region)) throw new Error(`地域の避難所がありません：${region}。6地域を含む避難所Excelを確認してください。`);
+    }
+    const initialTotal = Object.values(regional).reduce((sum, item) => sum + item.initial, 0);
+    const additionalTotal = Object.values(regional).reduce((sum, item) => sum + item.additional, 0);
+    if (initialTotal !== 32225 || additionalTotal !== 6445) {
+        throw new Error("内蔵した地域別推計人数の合計が不正です。");
+    }
+    return {shelters, regional, aspirationLoaded};
+}
+
+function distributeWholePeople(total, weights) {
+    const sum = weights.reduce((a, b) => a + b, 0);
+    if (!Number.isInteger(total) || total < 0 || sum <= 0) throw new Error("地域の人数と収容可能人数を確認してください。");
+    const fractional = weights.map(weight => total * weight / sum);
+    const counts = fractional.map(value => Math.floor(value));
+    let remain = total - counts.reduce((a, b) => a + b, 0);
+    const order = fractional.map((value, index) => ({index, fraction: value - counts[index]}))
+        .sort((a, b) => b.fraction - a.fraction || a.index - b.index);
+    for (let i = 0; i < remain; i++) counts[order[i].index]++;
+    return counts;
+}
+
+function assignPopulationScenarios(shelters, regional) {
+    const byRegion = new Map();
+    shelters.forEach(item => {
+        const group = byRegion.get(item.regionKey) || [];
+        group.push(item);
+        byRegion.set(item.regionKey, group);
+    });
+    for (const [region, group] of byRegion) {
+        const counts = regional[region];
+        const weights = group.map(shelter => Number(shelter.capacity));
+        const initial = distributeWholePeople(counts.initial, weights);
+        const additional = distributeWholePeople(counts.additional, weights);
+        group.forEach((shelter, index) => {
+            shelter.initialEvacuees = initial[index];
+            shelter.additionalPotential = additional[index];
+            shelter.stageAdditions = [0, 0, 0];
+        });
+    }
+    // 市全体の増加数が1次・2次・3次で極力等しくなるよう、端数を整理。
+    // 各避難所で各期の到着数の差は最大1人。
+    const totalAdditional = shelters.reduce((sum, s) => sum + s.additionalPotential, 0);
+    const target = [Math.floor(totalAdditional / 3), Math.floor(totalAdditional / 3), totalAdditional - 2 * Math.floor(totalAdditional / 3)];
+    const current = [0, 0, 0];
+    shelters.forEach(shelter => {
+        const q = Math.floor(shelter.additionalPotential / 3);
+        shelter.stageAdditions = [q, q, q];
+        for (let k = 0; k < 3; k++) current[k] += q;
+    });
+    shelters.forEach(shelter => {
+        const q = Math.floor(shelter.additionalPotential / 3);
+        const remain = shelter.additionalPotential - q * 3;
+        const available = [0, 1, 2];
+        for (let k = 0; k < remain; k++) {
+            available.sort((a, b) => (target[b] - current[b]) - (target[a] - current[a]) || a - b);
+            const phase = available.shift();
+            shelter.stageAdditions[phase]++;
+            current[phase]++;
+        }
+    });
+    shelters.forEach(shelter => {
+        shelter.stageEvacuees = [];
+        let people = shelter.initialEvacuees;
+        for (let t = 0; t < 3; t++) {
+            people += shelter.stageAdditions[t];
+            shelter.stageEvacuees.push(people);
+        }
+        shelter.evacuees = shelter.initialEvacuees;
+    });
+    return {initialTotal: shelters.reduce((sum,s) => sum + s.initialEvacuees, 0), additionalTotal: totalAdditional, stageArrivals: current};
+}
+
+function evacueesAtStage(shelter, stageIndex) {
+    if (!shelter.stageEvacuees?.length) return Number(shelter.capacity || 0);
+    return shelter.stageEvacuees[Math.min(stageIndex, shelter.stageEvacuees.length - 1)];
+}
+
+function eligibleShelters() {
+    return allocationShelters.filter(item => {
+        const rice = numberOrNull(item?.stock?.retortRice);
+        const water = numberOrNull(item?.stock?.water500ml);
+        return rice !== null && water !== null && rice > 0 && water > 0;
+    });
+}
+
+function excludedShelters() {
+    return allocationShelters.filter(item => {
+        const rice = numberOrNull(item?.stock?.retortRice);
+        const water = numberOrNull(item?.stock?.water500ml);
+        return rice === null || water === null || rice <= 0 || water <= 0;
+    });
+}
+
+
+
+function updateAllocationConditionDisplay() {
+    const hasData = allocationShelters.length > 0;
+    const eligible = hasData ? `${eligibleShelters().length} か所` : "-";
+    const excluded = hasData ? `${excludedShelters().length} か所` : "-";
+    document.getElementById("eligible-count").textContent = eligible;
+    document.getElementById("excluded-count").textContent = excluded;
+}
+
+function stageLabel(index) {
+    const start = index * HOURS_PER_STAGE;
+    const end = (index + 1) * HOURS_PER_STAGE;
+    return `${index + 1}次（${start}〜${end}時間）`;
+}
+
+function renderStageInputs() {
+    const container = document.getElementById("allocation-stage-list");
+    container.innerHTML = allocationStages.map((stage, index) => `
+        <div class="stage-row-label">${stageLabel(index)}</div>
+        <div class="stage-input-cell">
+            <input type="number" min="0" step="0.1" inputmode="decimal"
+                   value="${escapeHtml(stage.foodKg)}" placeholder="kg"
+                   oninput="updateStageValue(${index}, 'foodKg', this.value)">
+        </div>
+        <div class="stage-input-cell">
+            <input type="number" min="0" step="0.1" inputmode="decimal"
+                   value="${escapeHtml(stage.waterKg)}" placeholder="kg"
+                   oninput="updateStageValue(${index}, 'waterKg', this.value)">
+        </div>
+    `).join("");
+
+    const removeButton = document.getElementById("stage-remove-btn");
+    if (removeButton) removeButton.disabled = allocationStages.length <= 1;
+}
+
+function saveStageSettings() {
+    sessionStorage.setItem("allocationStages", JSON.stringify(allocationStages));
+}
+
+function updateStageValue(index, key, value) {
+    if (!allocationStages[index]) return;
+    allocationStages[index][key] = value;
+    saveStageSettings();
+    invalidateAllocationPlan();
+}
+
+function addAllocationStage() {
+    allocationStages.push({foodKg: "", waterKg: ""});
+    saveStageSettings();
+    renderStageInputs();
+    invalidateAllocationPlan();
+}
+
+function removeAllocationStage() {
+    if (allocationStages.length <= 1) return;
+    allocationStages.pop();
+    activeAllocationStageIndex = Math.min(activeAllocationStageIndex, allocationStages.length - 1);
+    saveStageSettings();
+    renderStageInputs();
+    invalidateAllocationPlan();
+}
+
+function invalidateAllocationPlan() {
+    sessionStorage.removeItem("allocationPlan");
+    allocationPlan = null;
+    resetAllocationResult();
+}
+
+function stageSettingsAsNumbers() {
+    const stages = [];
+    for (let i = 0; i < allocationStages.length; i++) {
+        const foodKg = numberOrNull(allocationStages[i].foodKg);
+        const waterKg = numberOrNull(allocationStages[i].waterKg);
+        if (foodKg === null || waterKg === null || foodKg < 0 || waterKg < 0) return null;
+        stages.push({
+            index: i,
+            round: i + 1,
+            startHour: i * HOURS_PER_STAGE,
+            endHour: (i + 1) * HOURS_PER_STAGE,
+            label: stageLabel(i),
+            foodKg,
+            waterKg
+        });
+    }
+    return stages;
+}
+
+function buildCommodityRows(shelters, kind) {
+    return shelters.map((shelter, index) => {
+        const stageEvacuees = [...shelter.stageEvacuees];
+        const stageDemandsKg = stageEvacuees.map(people => people * (kind === "food" ? FOOD_KG_PER_PERSON_DAY : WATER_KG_PER_PERSON_DAY));
+        const evacuees = stageEvacuees[0];
+        const demandKg = stageDemandsKg[0];
+        const initialStockKg = kind === "food"
+            ? (numberOrNull(shelter.stock.retortRice) || 0) * RETORT_RICE_KG_PER_MEAL
+            : (numberOrNull(shelter.stock.water500ml) || 0) * WATER_KG_PER_BOTTLE;
+        return {
+            index: Number.isInteger(shelter.sourceIndex) ? shelter.sourceIndex : index,
+            name: shelter.name,
+            lat: shelter.lat,
+            lng: shelter.lng,
+            capacity: shelter.capacity,
+            evacuees,
+            stageEvacuees,
+            stageDemandsKg,
+            demandKg,
+            initialStockKg,
+            targetRate: shelter.targetRates?.[kind] ?? null,
+            currentStockKg: initialStockKg,
+            stageAllocations: [],
+            stageRates: [],
+            stageOpeningStocks: [],
+            stageClosingStocks: [],
+            finalRate: demandKg > 0 ? Math.min(1, initialStockKg / demandKg) : 1
+        };
+    });
+}
+
+function requiredForTarget(rows, targetRate) {
+    return rows.reduce((sum, row) => {
+        if (row.demandKg <= 0) return sum;
+        const cappedStock = Math.min(row.currentStockKg, row.demandKg);
+        const targetStock = Math.min(row.demandKg, targetRate * row.demandKg);
+        return sum + Math.max(0, targetStock - cappedStock);
+    }, 0);
+}
+
+function allocateSingleStage(rows, availableKg) {
+    const available = Math.max(0, Number(availableKg) || 0);
+    const minimumRateBefore = rows.length
+        ? Math.min(...rows.map(row => row.demandKg > 0 ? Math.min(1, row.currentStockKg / row.demandKg) : 1))
+        : 0;
+    const totalShortage = requiredForTarget(rows, 1);
+
+    let targetRate = 1;
+    if (available < totalShortage - 1e-9) {
+        let low = 0;
+        let high = 1;
+        for (let i = 0; i < 70; i++) {
+            const mid = (low + high) / 2;
+            if (requiredForTarget(rows, mid) <= available) low = mid;
+            else high = mid;
+        }
+        targetRate = low;
+    }
+
+    let usedKg = 0;
+    const allocations = [];
+    rows.forEach(row => {
+        const openingStock = row.currentStockKg;
+        const targetStock = row.demandKg > 0
+            ? Math.min(row.demandKg, targetRate * row.demandKg)
+            : openingStock;
+        const allocationKg = row.demandKg > 0 ? Math.max(0, targetStock - openingStock) : 0;
+        row.currentStockKg = openingStock + allocationKg;
+        const rateAfterAllocation = row.demandKg > 0
+            ? Math.min(1, row.currentStockKg / row.demandKg)
+            : 1;
+        usedKg += allocationKg;
+        allocations.push({openingStock, allocationKg, rateAfterAllocation});
+    });
+
+    const minimumRate = rows.length
+        ? Math.min(...rows.map(row => row.demandKg > 0 ? Math.min(1, row.currentStockKg / row.demandKg) : 1))
+        : 0;
+
+    return {
+        targetRate,
+        minimumRateBefore,
+        minimumRate,
+        usedKg,
+        unusedKg: Math.max(0, available - usedKg),
+        allocations
+    };
+}
+
+function simulateCommodity(shelters, kind, stages) {
+    const rows = buildCommodityRows(shelters, kind);
+    const stageSummaries = [];
+
+    stages.forEach((stage, stageIndex) => {
+        rows.forEach(row => {
+            row.evacuees = row.stageEvacuees[Math.min(stageIndex, row.stageEvacuees.length - 1)];
+            row.demandKg = row.evacuees * (kind === "food" ? FOOD_KG_PER_PERSON_DAY : WATER_KG_PER_PERSON_DAY);
+            row.stageDemandsKg[stageIndex] = row.demandKg;
+        });
+        const availableKg = kind === "food" ? stage.foodKg : stage.waterKg;
+        const result = allocateSingleStage(rows, availableKg);
+
+        rows.forEach((row, rowIndex) => {
+            const detail = result.allocations[rowIndex];
+            row.stageOpeningStocks.push(detail.openingStock);
+            row.stageAllocations.push(detail.allocationKg);
+            row.stageRates.push(detail.rateAfterAllocation);
+            row.finalRate = detail.rateAfterAllocation;
+        });
+
+        stageSummaries.push({
+            round: stage.round,
+            label: stage.label,
+            inputKg: availableKg,
+            usedKg: result.usedKg,
+            unusedKg: result.unusedKg,
+            minimumRateBefore: result.minimumRateBefore,
+            minimumRate: result.minimumRate,
+            targetRate: result.targetRate
+        });
+
+        // 前期の配分済み物資は次期へ引き継ぐ。
+        // 次期に避難者数が増えるため、充足率は低下する場合がある。
+        // この試作では時間経過による消費量の控除はまだ行わない。
+        rows.forEach(row => row.stageClosingStocks.push(row.currentStockKg));
+    });
+
+    return {
+        rows,
+        stageSummaries,
+        finalMinimumRate: stageSummaries.length ? stageSummaries[stageSummaries.length - 1].minimumRate : 0,
+        totalUsedKg: stageSummaries.reduce((sum, stage) => sum + stage.usedKg, 0)
+    };
+}
+
+
+function changeAllocationMethod() {
+    const isP1 = document.getElementById("allocation-method").value === "p1";
+    document.getElementById("v23-p1-options").hidden = !isP1;
+    invalidateAllocationPlan();
+}
+function updateTargetStatus() {
+    const el = document.getElementById("v23-target-status");
+    if (!el) return;
+    if (!allocationTargetLoaded) {
+        el.textContent = "希求水準：未読込（P1は実行できません）";
+        return;
+    }
+    const eligible = eligibleShelters();
+    const f = eligible.map(s=>100*s.targetRates.food);
+    const w = eligible.map(s=>100*s.targetRates.water);
+    el.textContent = `希求水準を読込済（全${allocationShelters.length}件）：食料 ${Math.min(...f)}～${Math.max(...f)}％／飲料水 ${Math.min(...w)}～${Math.max(...w)}％`;
+}
+async function solveP1Stage(rows, availableKg, rho) {
+    const response=await fetch("/api/p1-optimize", {
+        method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({rho,availableKg,rows:rows.map(row=>({
+            demandKg:row.demandKg,
+            securedKg:row.currentStockKg,
+            targetRate:row.targetRate
+        }))})
+    });
+    let payload;
+    try { payload=await response.json(); }
+    catch (_) {throw new Error("P1計算サーバーからの応答を確認してください。");}
+    if(!response.ok) throw new Error(payload.error || "P1計算に失敗しました。");
+    if(!Array.isArray(payload.allocationsKg) || payload.allocationsKg.length !== rows.length)
+        throw new Error("P1の計算結果の避難所数が一致しません。");
+    return payload;
+}
+function evaluateF1Stage(rows, stageIndex, rho) {
+    // The comparison baseline is evaluated by the SAME P1 objective, not its
+    // original min-rate metric. It is illustrative, not an executed plan.
+    const terms=[];
+    const active=[];
+    rows.forEach(row=>{
+        const d=row.stageDemandsKg[stageIndex], a=row.targetRate;
+        if(!(d>0) || !(a>=0 && a<1)) return;
+        const before=row.stageOpeningStocks[stageIndex] ?? row.initialStockKg;
+        const after=Math.min(d,before+(row.stageAllocations[stageIndex]||0));
+        const term=(a-after/d)/(1-a);
+        terms.push(term);
+        if(before<d-1e-9) active.push(term);
+    });
+    return active.length ? Math.max(...active)+rho*terms.reduce((a,b)=>a+b,0) : null;
+}
+async function simulateCommodityP1(shelters,kind,stages,rho){
+    const rows=buildCommodityRows(shelters,kind);
+    const stageSummaries=[];
+    for(const [stageIndex,stage] of stages.entries()) {
+        rows.forEach(row=>{
+            row.evacuees=row.stageEvacuees[Math.min(stageIndex,row.stageEvacuees.length-1)];
+            row.demandKg=row.evacuees*(kind==="food" ? FOOD_KG_PER_PERSON_DAY : WATER_KG_PER_PERSON_DAY);
+            row.stageDemandsKg[stageIndex]=row.demandKg;
+        });
+        const availableKg=kind==="food" ? stage.foodKg : stage.waterKg;
+        const answer=await solveP1Stage(rows,availableKg,rho);
+        rows.forEach((row,i)=>{
+            const original=row.currentStockKg;
+            const allocation=Number(answer.allocationsKg[i]);
+            if(!Number.isFinite(allocation) || allocation<0)
+                throw new Error("P1の出力値が不正です。");
+            row.currentStockKg+=allocation;
+            row.stageOpeningStocks.push(original);
+            row.stageAllocations.push(allocation);
+            row.stageRates.push(row.demandKg>0 ? Math.min(1,row.currentStockKg/row.demandKg) : 1);
+            row.finalRate=row.stageRates[stageIndex];
+            row.stageClosingStocks.push(row.currentStockKg);
+        });
+        stageSummaries.push({
+            round:stage.round,label:stage.label,inputKg:availableKg,
+            usedKg:answer.usedKg,unusedKg:answer.unusedKg,
+            minimumRateBefore:answer.minimumRateBefore,minimumRate:answer.minimumRate,
+            objectiveF1:answer.objectiveF1,theta:answer.theta,rho,
+            targetRate:null // P1 shelters have individual target rates.
+        });
+    }
+    return {rows,stageSummaries,
+        finalMinimumRate:stageSummaries.at(-1)?.minimumRate || 0,
+        totalUsedKg:stageSummaries.reduce((sum,s)=>sum+s.usedKg,0)};
+}
+
+function updateAllocationUploadStatus(message) {
+    const status = document.getElementById("allocation-upload-status");
+    if (!status) return;
+    if (message) {status.textContent = message;return;}
+    if (!allocationShelters.length) status.textContent = "① 避難所データを読み込んでください。";
+    else if (!allocationTargetLoaded) status.textContent = `避難所 ${allocationShelters.length} 件読込済。② 希求水準を読み込んでください。`;
+    else status.textContent = `読込完了：避難所 ${allocationShelters.length} 件と希求水準 ${allocationShelters.length} 件を照合済。`;
+}
+
+function applyAspirationWorkbook(workbook) {
+    if (!allocationShelters.length) return false;
+    // 不完全なデータを残さず、避難所名により123件を1対1で照合する。
+    allocationShelters.forEach(s => {delete s.targetRates;});
+    allocationTargetLoaded = false;
+    if (!readAspirationSheet(workbook, allocationShelters)) throw new Error("希求水準の列見出しが見つかりません。");
+    allocationTargetLoaded = true;
+    sessionStorage.setItem("shelterData", JSON.stringify(allocationShelters));
+    updateTargetStatus();
+    updateAllocationUploadStatus();
+    invalidateAllocationPlan();
+    return true;
+}
+
+async function bindShelterFile() {
+    const input = document.getElementById("allocation-shelter-file");
+    const fileName = document.getElementById("allocation-shelter-file-name");
+    const aspirationInput = document.getElementById("allocation-aspiration-file");
+    const aspirationName = document.getElementById("allocation-aspiration-file-name");
+
+    input.addEventListener("change", async function () {
+        if (!this.files?.length) return;
+        const file = this.files[0];
+        try {
+            const workbook = await readWorkbook(file);
+            const {shelters: items, regional} = readAllocationWorkbook(workbook);
+            assignPopulationScenarios(items, regional);
+            allocationShelters = items;
+            allocationMapHasFitted = false;
+            allocationRegionalCounts = regional;
+            allocationTargetLoaded = false;
+            fileName.textContent = file.name;
+            sessionStorage.setItem("shelterFileName", file.name);
+            sessionStorage.setItem("shelterData", JSON.stringify(items));
+            updateAllocationConditionDisplay();
+            updateTargetStatus();
+            updateAllocationUploadStatus();
+            invalidateAllocationPlan();
+            if (aspirationWorkbookCache) applyAspirationWorkbook(aspirationWorkbookCache);
+        } catch (error) {
+            console.error("避難所Excel読込エラー:", error);
+            fileName.textContent = "読み込みエラー";
+            updateAllocationUploadStatus("避難所データの読込に失敗しました。既存の正しいデータは保持しています。");
+            alert(`避難所Excelを読み込めませんでした。\n${error?.message || "データ形式を確認してください。"}`);
+        }
+    });
+
+    aspirationInput.addEventListener("change", async function () {
+        if (!this.files?.length) return;
+        const file = this.files[0];
+        try {
+            const workbook = await readWorkbook(file);
+            const names = workbook.SheetNames;
+            if (!names.includes("避難所データ")) throw new Error("『避難所データ』シート（食料・飲料水の希求水準）が見つかりません。");
+            // If shelters are not loaded yet, keep the workbook and match after their upload.
+            if (!allocationShelters.length) {
+                aspirationWorkbookCache = workbook;
+                aspirationName.textContent = file.name;
+                sessionStorage.setItem("aspirationFileName", file.name);
+                updateAllocationUploadStatus("希求水準Excelを受け付けました。次に避難所Excelを読み込んでください。");
+                return;
+            }
+            applyAspirationWorkbook(workbook);
+            aspirationWorkbookCache = workbook;
+            aspirationName.textContent = file.name;
+            sessionStorage.setItem("aspirationFileName", file.name);
+        } catch (error) {
+            console.error("希求水準Excel読込エラー:", error);
+            aspirationName.textContent = "照合エラー";
+            allocationTargetLoaded = false;
+            allocationShelters.forEach(s => {delete s.targetRates;});
+            sessionStorage.setItem("shelterData", JSON.stringify(allocationShelters));
+            updateTargetStatus();
+            updateAllocationUploadStatus("希求水準の照合に失敗しました。2つのExcelの避難所名を確認してください。");
+            invalidateAllocationPlan();
+            alert(`希求水準Excelを読み込めませんでした。\n${error?.message || "避難所名・目標率を確認してください。"}`);
+        }
+    });
+}
+
+function resetAllocationResult() {
+    document.getElementById("summary-eligible-count").textContent = "-";
+    document.getElementById("summary-excluded-count").textContent = "-";
+    document.getElementById("summary-food-rate").textContent = "-";
+    document.getElementById("summary-water-rate").textContent = "-";
+    document.getElementById("stage-minimum-summary").innerHTML = "";
+    document.getElementById("v23-result-info").hidden = true;
+    document.getElementById("v23-f1-comparison").hidden = true;
+    document.getElementById("allocation-v20-chart-track").innerHTML = '<p class="allocation-v20-empty">配分計画を実行すると結果を表示します。</p>';
+    document.getElementById("allocation-table-head").innerHTML = "";
+    document.getElementById("allocation-table-body").innerHTML = '<tr class="empty-row"><td colspan="8">配分計画を実行すると結果を表示します。</td></tr>';
+    document.getElementById("allocation-v20-tooltip").hidden = true;
+    document.getElementById("allocation-v20-chart-count").textContent = "-";
+    document.getElementById("allocation-population-summary").hidden = true;
+    document.getElementById("allocation-population-summary").innerHTML = "";
+    clearAllocationMapOverlays();
+}
+
+async function runAllocation() {
+    if (!allocationShelters.length) {
+        alert("避難所データを選択してください。");
+        return;
+    }
+
+    const stages = stageSettingsAsNumbers();
+    if (!stages || !stages.length) {
+        alert("各回の食料・飲料水の物資量を入力してください。");
+        return;
+    }
+
+    const eligible = eligibleShelters();
+    const excluded = excludedShelters();
+    if (!eligible.length) {
+        alert("レトルトご飯と飲料水の備蓄量がともに0より大きい避難所を確認できませんでした。");
+        return;
+    }
+
+    if (!allocationRegionalCounts || allocationShelters.some(s => !s.stageEvacuees?.length)) {
+        alert("地域・避難所名・収容可能人数を含む避難所データExcelを読み込んでください。");
+        return;
+    }
+    const method = document.getElementById("allocation-method").value;
+    const rho = numberOrNull(document.getElementById("p1-rho").value);
+    if(method === "p1" && !allocationTargetLoaded) {
+        alert("② 希求水準データExcelを読み込んでください。避難所Excelとは別に選択してください。");
+        return;
+    }
+    if(method === "p1" && (rho === null || rho <= 0 || rho > 1)) {
+        alert("ρを0より大きく1以下に設定してください。");
+        return;
+    }
+    const button=document.getElementById("allocation-run-btn");
+    button.disabled=true;
+    button.textContent="配分を計算しています…";
+    let food,water, legacyComparison=null;
+    try {
+        if(method === "p1") {
+            // Independent runs using the same source data for genuine comparison.
+            const previousFood=simulateCommodity(eligible,"food",stages);
+            const previousWater=simulateCommodity(eligible,"water",stages);
+            food=await simulateCommodityP1(eligible,"food",stages,rho);
+            water=await simulateCommodityP1(eligible,"water",stages,rho);
+            legacyComparison={
+                foodScores:stages.map((_,i)=>evaluateF1Stage(previousFood.rows,i,rho)),
+                waterScores:stages.map((_,i)=>evaluateF1Stage(previousWater.rows,i,rho))
+            };
+        } else {
+            food=simulateCommodity(eligible,"food",stages);
+            water=simulateCommodity(eligible,"water",stages);
+        }
+    } catch(error) {
+        console.error("配分計算エラー:",error);
+        alert(`配分計算を完了できませんでした。\n${error?.message || "計算条件を確認してください。"}`);
+        return;
+    } finally {
+        button.disabled=false;
+        button.textContent="配分計画を実行する　›";
+    }
+
+    allocationPlan = {
+        version: "v23-p1-aspiration", method, rho:method === "p1" ? rho : null,
+        planningOnly: true,
+        comparison: legacyComparison,
+        createdAt: new Date().toISOString(),
+        assumptions: {
+            foodKgPerPersonDay: FOOD_KG_PER_PERSON_DAY,
+            waterKgPerPersonDay: WATER_KG_PER_PERSON_DAY,
+            retortRiceKgPerMeal: RETORT_RICE_KG_PER_MEAL,
+            waterKgPerBottle: WATER_KG_PER_BOTTLE,
+            hoursPerStage: HOURS_PER_STAGE
+        },
+        counts: {
+            total: allocationShelters.length,
+            eligible: eligible.length,
+            excluded: excluded.length
+        },
+        excludedShelters: excluded.map(item => item.name),
+        regionalCounts: allocationRegionalCounts,
+        stages,
+        food,
+        water
+    };
+
+    try {sessionStorage.setItem("allocationPlan", JSON.stringify(allocationPlan));}
+    catch(e) {console.warn("配分結果がブラウザ保存容量を超えました。",e);}
+    sessionStorage.setItem("allocationStages", JSON.stringify(allocationStages));
+    sessionStorage.removeItem("evacuationRatePercent");
+
+    activeAllocationKind = "food";
+    activeAllocationStageIndex = 0;
+    document.getElementById("allocation-sort").value = "name-asc";
+    switchAllocationView("table");
+    document.querySelectorAll(".allocation-tab").forEach(button => {
+        button.classList.toggle("active", button.dataset.kind === "food");
+    });
+    renderAllocationResult();
+}
+
+function switchAllocationTab(kind) {
+    activeAllocationKind = kind;
+    document.querySelectorAll(".allocation-tab").forEach(button => {
+        button.classList.toggle("active", button.dataset.kind === kind);
+    });
+    renderAllocationResult();
+}
+
+function switchAllocationStage(index) {
+    if (!allocationPlan?.stages?.length) return;
+    const next = Number(index);
+    if (!Number.isInteger(next) || next < 0 || next >= allocationPlan.stages.length) return;
+    activeAllocationStageIndex = next;
+    renderAllocationResult();
+}
+
+function renderAllocationStageTabs() {
+    const container = document.getElementById("allocation-stage-tabs");
+    if (!allocationPlan?.stages?.length) {
+        container.innerHTML = "";
+        return;
+    }
+    if (activeAllocationStageIndex >= allocationPlan.stages.length) activeAllocationStageIndex = 0;
+    container.innerHTML = allocationPlan.stages.map((stage, index) => `
+        <button type="button" class="allocation-stage-tab ${index === activeAllocationStageIndex ? "active" : ""}"
+                onclick="switchAllocationStage(${index})">${stage.round}次</button>
+    `).join("");
+}
+
+// 画面のみ切り替える。表・グラフとも同じ配分計算結果を使用する。
+function switchAllocationView(view) {
+    if (!["table", "chart"].includes(view)) return;
+    activeAllocationView = view;
+    document.getElementById("allocation-table-view").hidden = view !== "table";
+    document.getElementById("allocation-chart-view").hidden = view !== "chart";
+    ["table", "chart"].forEach(kind => {
+        const button = document.getElementById(`allocation-view-${kind}`);
+        if (!button) return;
+        button.classList.toggle("active", kind === view);
+        button.setAttribute("aria-pressed", String(kind === view));
+    });
+    document.getElementById("allocation-v20-tooltip").hidden = true;
+    // 地図は常時表示。表・グラフの切替と独立して更新する。
+    if (allocationPlan) renderAllocationMap();
+}
+
+// v19 と同じ列・算出値の表を復元する。
+function renderAllocationTableHead() {
+    if (!allocationPlan) return;
+    const stage = allocationPlan.stages[activeAllocationStageIndex];
+    const round = stage?.round || activeAllocationStageIndex + 1;
+    document.getElementById("allocation-table-head").innerHTML = `
+        <tr>
+            <th>No.</th>
+            <th>避難所名</th>
+            ${allocationPlan?.method === "p1" ? "<th>希求水準（%）</th>" : ""}
+            <th>${round}次想定避難者数（人）</th>
+            <th><span class="v19-help-label">必要量<span class="condition-help" tabindex="0" aria-label="必要量の説明">?<span class="condition-tooltip">避難者数と必要量基準から算出した物資量。</span></span></span>（kg）</th>
+            <th>${allocationPlan?.method === "p1" ? "配分前確保量" : "備蓄量"}（kg）</th>
+            <th>配分前<span class="v19-help-label">充足率<span class="condition-help" tabindex="0" aria-label="充足率の説明">?<span class="condition-tooltip">必要量に対して、備蓄量と累計配分量の合計が占める割合。</span></span></span>（%）</th>
+            <th>${round}次<span class="v19-help-label">配分量<span class="condition-help" tabindex="0" aria-label="配分量の説明">?<span class="condition-tooltip">各避難所に新たに割り当てる物資量。</span></span></span>（kg）</th>
+            <th>${round}次配分後<span class="v19-help-label">充足率<span class="condition-help" tabindex="0" aria-label="充足率の説明">?<span class="condition-tooltip">必要量に対して、備蓄量と累計配分量の合計が占める割合。</span></span></span>（%）</th>
+        </tr>`;
+}
+
+function renderAllocationTable(rows, stageIndex, shelterNumbers) {
+    const html = rows.map(row => {
+        const openingStock = row.stageOpeningStocks[stageIndex] ?? row.initialStockKg;
+        const demandKg = row.stageDemandsKg[stageIndex] ?? row.demandKg;
+        const evacuees = row.stageEvacuees[Math.min(stageIndex, row.stageEvacuees.length - 1)];
+        const beforeRate = demandKg > 0 ? Math.min(1, openingStock / demandKg) : 1;
+        const allocation = row.stageAllocations[stageIndex] ?? 0;
+        const afterRate = row.stageRates[stageIndex] ?? beforeRate;
+        return `<tr>
+                <td>${shelterNumbers.get(row.index)}</td>
+                <td class="name-cell">${escapeHtml(row.name)}</td>
+                ${allocationPlan?.method === "p1" ? `<td>${(row.targetRate * 100).toFixed(1)}</td>` : ""}
+                <td>${Number(evacuees).toLocaleString("ja-JP")}</td>
+                <td>${formatKg(demandKg)}</td>
+                <td>${formatKg(openingStock)}</td>
+                <td>${(beforeRate * 100).toFixed(1)}</td>
+                <td>${formatKg(allocation)}</td>
+                <td class="rate-cell">${(Math.min(1, afterRate) * 100).toFixed(1)}</td>
+            </tr>`;
+    }).join("");
+    document.getElementById("allocation-table-body").innerHTML = html || `<tr class="empty-row"><td colspan="${allocationPlan?.method === "p1" ? 9 : 8}">結果がありません。</td></tr>`;
+}
+
+// 番号は避難所名順で固定。棒の位置だけが充足率順の並べ替えで変わる。
+function renderAllocationBarChart(rows, stageIndex, shelterNumbers) {
+    const track = document.getElementById("allocation-v20-chart-track");
+    document.getElementById("allocation-v20-tooltip").hidden = true;
+    document.getElementById("allocation-v20-chart-count").textContent = rows.length;
+    if (!rows.length) {
+        track.innerHTML = '<p class="allocation-v20-empty">結果がありません。</p>';
+        return;
+    }
+
+    const bars = rows.map(row => {
+        const shelterNumber = shelterNumbers.get(row.index);
+        const openingStock = row.stageOpeningStocks[stageIndex] ?? row.initialStockKg;
+        const demandKg = row.stageDemandsKg[stageIndex] ?? row.demandKg;
+        const evacuees = row.stageEvacuees[Math.min(stageIndex, row.stageEvacuees.length - 1)];
+        const beforeRate = demandKg > 0 ? Math.min(1, openingStock / demandKg) : 1;
+        const allocationKg = row.stageAllocations[stageIndex] ?? 0;
+        const afterRate = row.stageRates[stageIndex] ?? beforeRate;
+        const beforePct = Math.max(0, Math.min(100, beforeRate * 100));
+        const afterPct = Math.max(0, Math.min(100, afterRate * 100));
+        const detail = [
+            `No.${shelterNumber}　${row.name}`,
+            `配分前：${formatRate(beforeRate)}　配分後：${formatRate(afterRate)}`,
+            `避難者数：${Number(evacuees).toLocaleString("ja-JP")} 人`,
+            `必要量：${formatKg(demandKg)} kg　今回配分量：${formatKg(allocationKg)} kg`
+        ].join("\n");
+        return `<div class="allocation-v20-plot-group" tabindex="0"
+                     data-chart-tooltip="${escapeHtml(detail)}" aria-label="${escapeHtml(detail)}">
+                <div class="allocation-v20-bar-pair" aria-hidden="true">
+                    <span class="allocation-v20-bar before" style="height:${beforePct.toFixed(5)}%"></span>
+                    <span class="allocation-v20-bar after" style="height:${afterPct.toFixed(5)}%"></span>
+                </div>
+                <span class="allocation-v20-index">${shelterNumber}</span>
+            </div>`;
+    });
+    track.innerHTML = `<div class="allocation-v20-plot" style="--shelter-count:${rows.length}">${bars.join("")}</div>`;
+}
+
+function setupAllocationChartTooltip() {
+    const canvas = document.getElementById("allocation-v20-chart-canvas");
+    const tooltip = document.getElementById("allocation-v20-tooltip");
+    const card = document.getElementById("allocation-chart-view");
+    function show(group, clientX, clientY) {
+        if (!group) return;
+        tooltip.textContent = group.dataset.chartTooltip;
+        tooltip.hidden = false;
+        const cardRect = card.getBoundingClientRect();
+        const tooltipWidth = tooltip.offsetWidth || 300;
+        const tooltipHeight = tooltip.offsetHeight || 100;
+        const x = Math.max(8, Math.min(cardRect.width - tooltipWidth - 8, clientX - cardRect.left + 12));
+        const y = Math.max(8, Math.min(cardRect.height - tooltipHeight - 8, clientY - cardRect.top - tooltipHeight - 12));
+        tooltip.style.left = `${x}px`;
+        tooltip.style.top = `${y}px`;
+    }
+    canvas.addEventListener("pointerover", e => {
+        const group = e.target.closest(".allocation-v20-plot-group");
+        if (group) show(group, e.clientX, e.clientY);
+    });
+    canvas.addEventListener("pointermove", e => {
+        const group = e.target.closest(".allocation-v20-plot-group");
+        if (group) show(group, e.clientX, e.clientY);
+    });
+    canvas.addEventListener("pointerout", e => {
+        if (!e.relatedTarget || !canvas.contains(e.relatedTarget)) tooltip.hidden = true;
+    });
+    canvas.addEventListener("focusin", e => {
+        const group = e.target.closest(".allocation-v20-plot-group");
+        if (group) {
+            const rect = group.getBoundingClientRect();
+            show(group, rect.left, rect.top);
+        }
+    });
+    canvas.addEventListener("focusout", e => {
+        if (!e.relatedTarget || !canvas.contains(e.relatedTarget)) tooltip.hidden = true;
+    });
+}
+
+function clearAllocationMapOverlays() {
+    allocationPieOverlays.forEach(overlay => overlay.setMap(null));
+    allocationPieOverlays = [];
+}
+
+// 地図のズームに依存しないSVGの扇形。中心の位置は正確な緯度・経度に追従する。
+function createAllocationPieOverlay(center, radiusPx, fraction, popupHtml) {
+    const overlay = new google.maps.OverlayView();
+    const value = Math.min(1, Math.max(0, Number(fraction) || 0));
+    const radius = radiusPx;
+    const padding = 3;
+    const c = radius + padding;
+    const size = 2 * c;
+    let markerElement = null;
+
+    overlay.onAdd = function() {
+        markerElement = document.createElement("div");
+        markerElement.className = "allocation-v22-pie-marker";
+        markerElement.style.width = `${size}px`;
+        markerElement.style.height = `${size}px`;
+        markerElement.style.zIndex = `${Math.max(1, 1000 - Math.round(radiusPx))}`;
+        let sector = "";
+        if (value >= 1) {
+            sector = `<circle cx="${c}" cy="${c}" r="${radius}" fill="#7b3fc6" fill-opacity="0.78"/>`;
+        } else if (value > 0) {
+            const theta = value * 2 * Math.PI;
+            const x = c + radius * Math.sin(theta);
+            const y = c - radius * Math.cos(theta);
+            sector = `<path d="M ${c} ${c} L ${c} ${c-radius} A ${radius} ${radius} 0 ${theta > Math.PI ? 1 : 0} 1 ${x} ${y} Z" fill="#7b3fc6" fill-opacity="0.78"/>`;
+        }
+        markerElement.innerHTML = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            ${sector}
+            <circle cx="${c}" cy="${c}" r="${radius}" fill="none" stroke="#000000" stroke-width="2"/>
+            <circle cx="${c}" cy="${c}" r="2.8" fill="#e53935" stroke="#ffffff" stroke-width="0.85"/>
+        </svg>`;
+        markerElement.tabIndex = 0;
+        markerElement.setAttribute("role", "button");
+        markerElement.setAttribute("aria-label", "避難所配分結果の詳細を表示");
+        const openPopup = (event) => {
+            event.stopPropagation();
+            allocationMapInfoWindow.setContent(popupHtml);
+            allocationMapInfoWindow.setPosition(center);
+            allocationMapInfoWindow.open(allocationMap);
+        };
+        markerElement.addEventListener("click", openPopup);
+        markerElement.addEventListener("keydown", event => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                openPopup(event);
+            }
+        });
+        this.getPanes().overlayMouseTarget.appendChild(markerElement);
+    };
+    overlay.draw = function() {
+        if (!markerElement) return;
+        const pixel = this.getProjection().fromLatLngToDivPixel(center);
+        if (!pixel) return;
+        markerElement.style.left = `${pixel.x}px`;
+        markerElement.style.top = `${pixel.y}px`;
+    };
+    overlay.onRemove = function() {
+        if (markerElement) markerElement.remove();
+        markerElement = null;
+    };
+    overlay.setMap(allocationMap);
+    return overlay;
+}
+
+function ensureAllocationMap() {
+    if (allocationMapInitialized || typeof google === "undefined" || !document.getElementById("allocation-google-map")) return;
+    allocationMap = new google.maps.Map(document.getElementById("allocation-google-map"), {
+        center: ALLOCATION_MAP_CENTER,
+        zoom: 12,
+        mapTypeControl: true,
+        streetViewControl: false,
+        fullscreenControl: true,
+        gestureHandling: "greedy",
+        mapTypeControlOptions: {
+            mapTypeIds: ["roadmap", "satellite"]
+        }
+    });
+    allocationMapInfoWindow = new google.maps.InfoWindow();
+    allocationMapInitialized = true;
+}
+
+function stageDetailForShelter(item, row, stageIndex, kind) {
+    const demandKg = row ? (row.stageDemandsKg[stageIndex] ?? row.demandKg) : ((kind === "food" ? FOOD_KG_PER_PERSON_DAY : WATER_KG_PER_PERSON_DAY) * evacueesAtStage(item, stageIndex));
+    const allocationKg = row ? (row.stageAllocations[stageIndex] ?? 0) : 0;
+    const afterRate = row ? (row.stageRates[stageIndex] ?? 0) : 0;
+    const beforeStock = row ? (row.stageOpeningStocks[stageIndex] ?? row.initialStockKg) : 0;
+    return { demandKg, allocationKg, afterRate, beforeStock };
+}
+
+function renderAllocationMap() {
+    if (!allocationPlan || !allocationShelters.length) return;
+    ensureAllocationMap();
+    if (!allocationMapInitialized) return;
+    clearAllocationMapOverlays();
+
+    const kind = activeAllocationKind;
+    const result = allocationPlan[kind];
+    const stageIndex = activeAllocationStageIndex;
+    const rowsByIndex = new Map((result?.rows || []).map(row => [row.index, row]));
+    // v21の未整備避難所(分析対象外)を除き、今回配分量が0の避難所は記号を描画しない。
+    const allShelters = allocationShelters.filter(item =>
+        Number.isFinite(Number(item.lat)) && Number.isFinite(Number(item.lng)) &&
+        rowsByIndex.has(item.sourceIndex)
+    );
+    if (!allShelters.length) return;
+
+    const bounds = new google.maps.LatLngBounds();
+    allShelters.forEach(item => {
+        bounds.extend({lat: Number(item.lat), lng: Number(item.lng)});
+        const row = rowsByIndex.get(item.sourceIndex);
+        const detail = stageDetailForShelter(item, row, stageIndex, kind);
+        if (!(detail.allocationKg > 0) || !(detail.demandKg > 0)) return;
+
+        const cumulativeAllocationKg = (row.stageAllocations || [])
+            .slice(0, stageIndex + 1)
+            .reduce((sum, amount) => sum + Math.max(0, Number(amount) || 0), 0);
+        const rawRatio = cumulativeAllocationKg / detail.demandKg;
+        const fraction = Math.min(1, Math.max(0, rawRatio));
+        // 全避難所・全期で固定：必要量1,000kgなら半径20px。
+        // 面積比例のsqrt方式により、数量2倍で半径も2倍にはならない。
+        // 見失わないための最小半径と重なり防止の最大半径のみ表示上制限する。
+        const theoreticalRadius = ALLOCATION_MAP_REFERENCE_RADIUS_PX *
+            Math.sqrt(detail.demandKg / ALLOCATION_MAP_REFERENCE_KG);
+        const outerRadius = Math.max(ALLOCATION_MAP_MIN_RADIUS_PX,
+            Math.min(ALLOCATION_MAP_MAX_RADIUS_PX, theoreticalRadius));
+        const title = [
+            `<div class="map-popup"><strong>${escapeHtml(item.name)}</strong>`,
+            `<div>想定避難者数：${evacueesAtStage(item, stageIndex).toLocaleString("ja-JP")} 人（収容可能人数 ${Number(item.capacity).toLocaleString("ja-JP")} 人）</div>`,
+            `<div>${kind === "food" ? "食料" : "飲料水"}必要量：${formatKg(detail.demandKg)} kg</div>`,
+            `<div>${allocationPlan.stages[stageIndex].round}次配分量：${formatKg(detail.allocationKg)} kg</div>`,
+            `<div>累計配分量：${formatKg(cumulativeAllocationKg)} kg</div>`,
+            `<div>必要量に対する累計配分比率：${(rawRatio * 100).toFixed(1)}%</div>`,
+            `<div>扇形の表示角度：${(fraction * 360).toFixed(1)}°${rawRatio > 1 ? "（360°で表示上限）" : ""}</div>`,
+            `<div>${allocationPlan.stages[stageIndex].round}次配分後充足率：${formatRate(detail.afterRate)}</div>`,
+            `<div>配分前備蓄量：${formatKg(detail.beforeStock)} kg</div>`,
+            `</div>`
+        ].join("");
+        const center = {lat: Number(item.lat), lng: Number(item.lng)};
+        allocationPieOverlays.push(createAllocationPieOverlay(center, outerRadius, fraction, title));
+    });
+
+    if (!allocationMapHasFitted) {
+        if (allShelters.length === 1) {
+            allocationMap.setCenter(bounds.getCenter());
+            allocationMap.setZoom(14);
+        } else {
+            allocationMap.fitBounds(bounds, 40);
+        }
+        allocationMapHasFitted = true;
+    }
+}
+
+function renderAllocationResult() {
+    if (!allocationPlan) {
+        resetAllocationResult();
+        return;
+    }
+
+    if (activeAllocationStageIndex >= allocationPlan.stages.length) activeAllocationStageIndex = 0;
+    const stage = allocationPlan.stages[activeAllocationStageIndex];
+    const round = stage?.round || activeAllocationStageIndex + 1;
+    const foodStage = allocationPlan.food.stageSummaries[activeAllocationStageIndex];
+    const waterStage = allocationPlan.water.stageSummaries[activeAllocationStageIndex];
+
+    const isP1 = allocationPlan.method === "p1";
+    const info=document.getElementById("v23-result-info");
+    info.hidden=false;
+    info.textContent=isP1
+        ? "P1による理想配分の試算結果です。実配送量ではありません。P0（車両制約）・P2（配送経路）はv23では未実装です。"
+        : "従来方式の配分試算です。配送完了実績ではありません。";
+    document.getElementById("summary-eligible-count").textContent = `${allocationPlan.counts.eligible} か所`;
+    document.getElementById("summary-excluded-count").textContent = `${allocationPlan.counts.excluded} か所`;
+    document.getElementById("summary-food-label").textContent = `食料の${round}次最低充足率`;
+    document.getElementById("summary-water-label").textContent = `飲料水の${round}次最低充足率`;
+    document.getElementById("summary-food-rate").textContent = formatRate(foodStage?.minimumRate ?? 0);
+    document.getElementById("summary-water-rate").textContent = formatRate(waterStage?.minimumRate ?? 0);
+
+    renderAllocationStageTabs();
+    const initialPopulation = allocationShelters.reduce((sum,s) => sum + Number(s.initialEvacuees || 0), 0);
+    const additionalPopulation = allocationShelters.reduce((sum,s) => sum + Number(s.additionalPotential || 0), 0);
+    const stagePopulation = allocationShelters.reduce((sum,s) => sum + evacueesAtStage(s,activeAllocationStageIndex), 0);
+    const currentAdditional = stagePopulation - initialPopulation;
+    const popSummary = document.getElementById("allocation-population-summary");
+    popSummary.hidden = false;
+    popSummary.innerHTML = `
+        <span>発災直後：<strong>${initialPopulation.toLocaleString("ja-JP")} 人</strong></span>
+        <span>${round}次想定避難者数：<strong>${stagePopulation.toLocaleString("ja-JP")} 人</strong></span>
+        <span>累計追加：<strong>${currentAdditional.toLocaleString("ja-JP")} 人</strong></span>
+        <span>未到着想定：<strong>${(additionalPopulation - currentAdditional).toLocaleString("ja-JP")} 人</strong></span>`;
+
+    const result = allocationPlan[activeAllocationKind];
+    const summary = result.stageSummaries[activeAllocationStageIndex];
+    document.getElementById("stage-minimum-summary").innerHTML = summary ? `
+        <div class="stage-minimum-chip">
+            <span>配分前最低充足率</span>
+            <strong>${formatRate(summary.minimumRateBefore)}</strong>
+        </div>
+        <div class="stage-minimum-arrow">→</div>
+        <div class="stage-minimum-chip emphasis">
+            <span>${round}次配分後最低充足率</span>
+            <strong>${formatRate(summary.minimumRate)}</strong>
+        </div>
+        <div class="stage-minimum-chip supply-chip">
+            <span>${activeAllocationKind === "food" ? "食料" : "飲料水"}供給量</span>
+            <strong>${formatKg(summary.inputKg)} kg</strong>
+        </div>
+    ` : "";
+
+    const compare=document.getElementById("v23-f1-comparison");
+    compare.hidden=!isP1;
+    if (isP1) {
+        const p1F1=summary?.objectiveF1;
+        const legacyF1=allocationPlan.comparison?.[`${activeAllocationKind}Scores`]?.[activeAllocationStageIndex];
+        const val=v=>v===null || v===undefined || !Number.isFinite(v) ? "算定対象なし" : Number(v).toFixed(5);
+        compare.innerHTML=`<strong>P1 評価値 F1*：${val(p1F1)}</strong><span>従来方式を同じF1で評価：${val(legacyF1)}</span><span>ρ = ${allocationPlan.rho}（小さい値が良い）</span>`;
+    }
+    const sortMode = document.getElementById("allocation-sort")?.value || "name-asc";
+    // 同じ避難所は食料・飲料水・すべての配分回で同じ番号とする。
+    // 同名施設があっても読込時の index で別々に識別する。
+    const shelterNumbers = new Map(
+        [...result.rows]
+            .sort((a, b) => a.name.localeCompare(b.name, "ja") || a.index - b.index)
+            .map((row, index) => [row.index, index + 1])
+    );
+    const rows = [...result.rows];
+    rows.sort((a, b) => {
+        const aRate = a.stageRates[activeAllocationStageIndex] ?? 0;
+        const bRate = b.stageRates[activeAllocationStageIndex] ?? 0;
+        const byName = a.name.localeCompare(b.name, "ja") || a.index - b.index;
+        if (sortMode === "rate-desc") return bRate - aRate || byName;
+        if (sortMode === "name-asc") return byName;
+        return aRate - bRate || byName;
+    });
+
+    renderAllocationTableHead();
+    renderAllocationTable(rows, activeAllocationStageIndex, shelterNumbers);
+    renderAllocationBarChart(rows, activeAllocationStageIndex, shelterNumbers);
+    // 地図は表・グラフと並列に表示し、回次・物資の選択と同時に更新する。
+    renderAllocationMap();
+}
+
+function restoreAllocationState() {
+    try {
+        allocationShelters = JSON.parse(sessionStorage.getItem("shelterData") || "[]");
+        allocationRegionalCounts = EMBEDDED_REGIONAL_COUNTS;
+        allocationTargetLoaded = !!sessionStorage.getItem("aspirationFileName") && allocationShelters.length>0 &&
+            allocationShelters.every(s => s.targetRates &&
+                Number.isFinite(s.targetRates.food) && Number.isFinite(s.targetRates.water));
+        sessionStorage.removeItem("regionalCounts"); // 過去版の誤った地域別人数を破棄する
+        if (allocationShelters.length) {
+            allocationShelters.forEach(item => {item.regionKey = normalizeAllocationRegion(item.region);});
+            if (allocationShelters.every(item => item.regionKey)) {
+                assignPopulationScenarios(allocationShelters, allocationRegionalCounts);
+            } else {
+                // 地域欄がない旧データは再アップロードで地域付き台帳に置換する。
+                allocationShelters = [];
+                sessionStorage.removeItem("shelterData");
+            }
+        }
+        // 配分の保存結果は古い可能性があるため、再計算を必須にする。
+        allocationPlan = null;
+        sessionStorage.removeItem("allocationPlan");
+        const storedStages = JSON.parse(sessionStorage.getItem("allocationStages") || "null");
+        if (Array.isArray(storedStages) && storedStages.length) allocationStages = storedStages;
+    } catch (error) {
+        allocationShelters = [];
+        allocationRegionalCounts = EMBEDDED_REGIONAL_COUNTS;
+        allocationPlan = null;
+    }
+
+    const shelterFileName = sessionStorage.getItem("shelterFileName");
+    if (shelterFileName) document.getElementById("allocation-shelter-file-name").textContent = shelterFileName;
+    const aspirationFileName = sessionStorage.getItem("aspirationFileName");
+    if (aspirationFileName && allocationTargetLoaded) document.getElementById("allocation-aspiration-file-name").textContent = aspirationFileName;
+    updateAllocationUploadStatus();
+
+    if (allocationPlan?.stages?.length && !sessionStorage.getItem("allocationStages")) {
+        allocationStages = allocationPlan.stages.map(stage => ({foodKg: stage.foodKg, waterKg: stage.waterKg}));
+    }
+
+    renderStageInputs();
+    updateAllocationConditionDisplay();
+    updateTargetStatus();
+    if (allocationPlan) renderAllocationResult();
+}
+
+bindShelterFile();
+restoreAllocationState();
+changeAllocationMethod();
+setupAllocationChartTooltip();
+switchAllocationView(activeAllocationView);
+
+window.initAllocationMap = function() {
+    if (allocationPlan) renderAllocationMap();
+};
+</script>
+{% if api_key %}
+<script async defer
+ src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&callback=initAllocationMap&language=ja&region=JP">
+</script>
+{% endif %}
+{% endblock %}
