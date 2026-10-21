@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}物資輸送経路｜救援物資配送支援システム{% endblock %}
+{% block content %}
+<section class="v31-route-page p2-ui">
+  <div class="v31-heading-row"><div><h1>物資輸送経路</h1><div class="p2-muted">配分計画（P1）を引き継ぎ、配送経路・車両・配送時間を算定します。</div></div><a class="v31-back-link" href="{{ url_for('plan') }}">配送条件を確認する →</a></div>
+  <div class="v31-flow"><div><span class="v31-number">1</span><strong>P1 配分評価</strong></div><span class="v31-flow-arrow">›</span><div><span class="v31-number">2</span><strong>P0 後続実装</strong></div><span class="v31-flow-arrow">›</span><div><span class="v31-number">3</span><strong>P2 配送経路</strong></div></div>
+  <div class="v31-config-panel p2-settings"><div class="v31-config-entries"><div><span>対象避難所</span><strong id="p2-n">—</strong></div><div><span>輸送拠点</span><strong>2か所</strong></div><div><span>2tトラック</span><strong id="p2-t">—</strong></div><div><span>配送回数上限</span><strong id="p2-r">—</strong></div><div><span>支援物資（1人日分）</span><strong id="p2-supply">—</strong></div></div><div class="v31-config-action"><button id="p2-start" class="p2-start" type="button">配送経路を計算する →</button><span id="p2-setup-status">P1・配送条件の保存が必要です。</span></div></div>
+  <div id="p2-info" class="p2-notice" role="status" aria-live="polite">P1の計算結果を読み込んでください。</div>
+  <div class="p2-cardgrid">
+    <div class="p2-card p2-primary-card"><span>配送完了予定時間 <span class="v33-help" tabindex="0" role="note" aria-label="計算方法">?<span class="v33-tip">F2（各配送回で最も遅く帰着する車両の所要時間の合計）。積込30分、準備15分／訪問、荷卸0.04分／人日分を含む研究仮定です。</span></span></span><strong id="p2-f2">—</strong></div>
+    <div class="p2-card"><span>配送予定避難所</span><strong id="p2-visited">—</strong></div>
+    <div class="p2-card"><span>配送物資量</span><strong id="p2-kits">—</strong></div>
+    <div class="p2-card"><span>使用車両・配送回数</span><strong id="p2-used">—</strong></div>
+  </div>
+  <div class="p2-map-layout">
+  <section class="p2-panel p2-map-panel"><div class="p2-row-title"><h2>配送経路図</h2><span class="p2-small-status" id="p2-map-status">未計算</span></div>
+    <div class="p2-filters"><label>配送回 <select id="p2-round" disabled><option value="all">すべての配送回</option></select></label><label>車両 <select id="p2-truck" disabled><option value="all">すべての車両</option></select></label><span class="p2-map-hint">※直線による概略経路（実道路ではありません）</span></div>
+    <div class="p2-mapbox" id="p2-mapbox"><div class="p2-map-empty">配送経路を計算すると、この領域に経路を表示します。</div></div>
+    <div class="p2-route-key"><span><i class="p2-hub-dot"></i>物資拠点</span><span><i class="p2-shelter-dot"></i>訪問避難所</span><span>線色：車両別</span></div>
+  </section>
+  <section class="p2-panel p2-route-panel"><div class="p2-row-title"><h2>車両別配送計画</h2><span id="p2-route-count" class="p2-small-status">—</span></div>
+    <div id="p2-vehicle-list" class="p2-tour-list"><div class="p2-empty">配送経路を計算すると、車両別の訪問順を表示します。</div></div>
+    <div class="p2-route-list-help">車両を選択すると、左の地図に該当ルートを表示します。</div>
+  </section>
+  </div>
+  <details class="p2-panel p2-fold"><summary>避難所別配送量・充足率を表示（全件）</summary><div class="p2-table-scroll"><table class="p2-table"><thead><tr><th>No.</th><th>避難所名</th><th>必要量</th><th>初期備蓄</th><th>P2配送量</th><th>配分前</th><th>配分後</th><th>訪問回数</th></tr></thead><tbody id="p2-shelter-table"></tbody></table></div></details>
+  <details class="p2-panel p2-fold"><summary>評価・計算条件を確認（研究検証用）</summary><div class="p2-verify"><div>F1* <strong id="p2-f1star">—</strong></div><div>P2配分評価 <strong id="p2-f1route">—</strong></div><div>評価差（暫定η=0） <strong id="p2-gap">—</strong></div><div>F3（途中不足度） <strong id="p2-f3">—</strong></div><div>北部からの出庫 <strong id="p2-north-stock">—</strong></div><div>南部からの出庫 <strong id="p2-south-stock">—</strong></div></div><p class="p2-muted">P0は未計算。η=0は検証用の仮値であり、F1条件を満たさない場合は参考計画となります。P2の経路はヒューリスティック探索であり、最適解を保証しません。</p><p class="p2-muted">二拠点への在庫・車両配分は仮割当。市街地距離と想定時速20km/hで移動時間を計算します。道路被害・緊急交通路の優先使用・24時間更新は未反映です。</p></details>
+  <div class="p2-next"><a href="{{ url_for('allocation') }}">配分計画（P1）へ戻る</a><a href="{{ url_for('plan') }}">配送条件を変更</a></div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+(()=>{
+ const $=id=>document.getElementById(id),fmt=n=>Number(n).toLocaleString('ja-JP',{maximumFractionDigits:1});
+ const html=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+ const get=k=>{try{return JSON.parse(sessionStorage.getItem(k)||'null')}catch{return null}};
+ const a=get('allocationPlan'),settings=get('p1DeliverySettings');
+ const settingsMatch=!!settings && Number(settings.t2)===Number(a?.p1DeliverySettings?.vehicles?.[0]?.count) && Number(settings.trips)===Number(a?.p1DeliverySettings?.trips) && Number(settings.delta)===Number(a?.p1DeliverySettings?.delta);
+ const good=!!a && a.version==='v34-complete-kit-p1'&&settingsMatch;
+ const food=a?.food?.rows||[];
+ $('p2-n').textContent=good?`${food.length}か所`:'—';
+ $('p2-t').textContent=settings?`${fmt(settings.t2)}台`:'—';
+ $('p2-r').textContent=settings?`${fmt(settings.trips)}回`:'—';
+ $('p2-supply').textContent=a?.stages?.[0]?`${fmt(a.stages[0].totalKg)}人日分`:'—';
+ $('p2-start').disabled=!good;
+ $('p2-setup-status').textContent=good?'P1計算済み・配送条件あり':'先にP1を再計算してください（完全セット方式）。';
+ if(good) $('p2-info').textContent='P2を計算すると、配送量・車両・訪問順と完了時間が確定した参考計画を表示します。';
+ let latest=null;
+ function makeInput(){const n=Number(settings.t2),r=Number(settings.trips),min=Number(settings.delta);
+   if(n!==Number(a.p1DeliverySettings?.vehicles?.[0]?.count)||r!==Number(a.p1DeliverySettings?.trips)||min!==Number(a.p1DeliverySettings?.delta))throw new Error('配送条件がP1と一致しません。P1を再計算してください。');
+   return {shelters:food.map(row=>({name:row.name,lat:row.lat,lng:row.lng,
+        demandKits:Math.max(1,Math.round(row.stageDemandsKg?.[0]??row.demandKg)),
+        stockKits:Math.round(row.stageOpeningStocks?.[0]??row.initialStockKg),visited:false})),
+     totalKits:Math.floor(Number(a.stages[0].totalKg)),targetRate:Number(a.targetRate),rho:Number(a.rho),
+     minKits:min,maxRounds:r,truckCount:n};
+ }
+ function stat(id,v){$(id).textContent=v}
+ const colors=['#2674c9','#dc7341','#23a27d','#9d63ca','#c9a02f','#338f95','#d45583','#667aaa','#af773a','#6eaaa5'];
+ function renderMap(res){
+   const selectedRound=$('p2-round').value,selectedTruck=$('p2-truck').value;
+   const show=res.routes.filter(r=>(selectedRound==='all'||String(r.round)===selectedRound)&&(selectedTruck==='all'||String(r.truck)===selectedTruck));
+   const pts=[...res.hubs,...res.shelters],xs=pts.map(p=>p.lng),ys=pts.map(p=>p.lat);
+   const lo=Math.min(...xs)-.007,hi=Math.max(...xs)+.007,b=Math.min(...ys)-.005,t=Math.max(...ys)+.005;
+   const X=l=>60+800*(l-lo)/(hi-lo),Y=l=>480-430*(l-b)/(t-b);
+   const seen=new Map();for(const r of show)for(const s of r.stops)seen.set(s.index,s);
+   const paths=show.map(r=>{let coords=[[res.hubs[r.hub].lat,res.hubs[r.hub].lng],...r.stops.map(p=>[p.lat,p.lng]),[res.hubs[r.hub].lat,res.hubs[r.hub].lng]];
+     const pts=coords.map(([la,ln])=>`${X(ln).toFixed(1)},${Y(la).toFixed(1)}`).join(' ');
+     return `<polyline points="${pts}" fill="none" stroke="${colors[(r.truck-1)%colors.length]}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".72"><title>${html(r.round+'回／車両'+r.truck)}</title></polyline>`}).join('');
+   const dots=[...seen.values()].map(p=>`<circle cx="${X(p.lng)}" cy="${Y(p.lat)}" r="4.5" fill="#fff" stroke="#30526f" stroke-width="2"><title>${html(p.name)}：${fmt(p.kits)}人日分</title></circle>`).join('');
+   const hubs=res.hubs.map((h,i)=>`<g><rect x="${X(h.lng)-7}" y="${Y(h.lat)-7}" width="14" height="14" rx="3" fill="#263c56"/><text x="${X(h.lng)+11}" y="${Y(h.lat)-10}" font-size="12" font-weight="700" fill="#263c56">${i===0?'北部':'南部'}</text></g>`).join('');
+   $('p2-mapbox').innerHTML=`<svg viewBox="0 0 920 515" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="輸送拠点と各避難所を直線で結ぶ概略配送経路図。実道路の形状ではありません。"><rect width="920" height="515" fill="#eef4f4"/><g stroke="#d3e1e6" opacity=".85">${Array.from({length:17},(_,i)=>`<line x1="${i*58}" y1="0" x2="${i*58}" y2="515"/>`).join('')}${Array.from({length:11},(_,i)=>`<line x1="0" y1="${i*53}" x2="920" y2="${i*53}"/>`).join('')}</g>${paths}${dots}${hubs}<text x="18" y="501" font-size="12" fill="#687d89">地点間は概略線・市街地距離換算、道路実走ルートではありません</text></svg>`;
+ }
+ function renderTables(res){
+  $('p2-vehicle-list').innerHTML=res.routes.map(r=>`<button type="button" class="p2-tour-item" data-round="${r.round}" data-truck="${r.truck}" aria-label="第${r.round}回 ${r.truck}号車の配送経路を表示"><span class="p2-tour-head"><span class="p2-tour-id"><i class="p2-tour-color" style="background:${colors[(r.truck-1)%colors.length]}"></i>第${r.round}回 · ${r.truck}号車</span><strong>${fmt(r.timeMin)}分</strong></span><span class="p2-tour-path" title="${html(r.stops.map(s=>s.name).join(' → '))}">${r.hub===0?'北部':'南部'}拠点 → ${html(r.stops.map(s=>s.name).join(' → '))} → ${r.hub===0?'北部':'南部'}拠点</span><span class="p2-tour-foot">${r.stops.length}か所訪問 <span>${fmt(r.kits)} 人日分</span></span></button>`).join('')||'<div class="p2-empty">出動のある車両はありません。</div>';
+  $('p2-route-count').textContent=`${res.routes.length} 出動`;
+  $('p2-shelter-table').innerHTML=res.shelters.map((s,i)=>`<tr><td>${i+1}</td><td class="p2-shelter-name">${html(s.name)}</td><td>${fmt(s.demandKits)}</td><td>${fmt(s.stockKits)}</td><td>${fmt(s.deliveredKits)}</td><td>${(100*s.coverageBefore).toFixed(1)}%</td><td>${(100*s.coverageAfter).toFixed(1)}%</td><td>${s.visits}</td></tr>`).join('');
+ }
+ function render(res){latest=res;
+  stat('p2-f2',res.f2Minutes>=60?`${Math.floor(res.f2Minutes/60)}時間${Math.round(res.f2Minutes%60)}分`:`${fmt(res.f2Minutes)}分`);stat('p2-visited',res.visitedShelters+' / '+res.shelterCount+' か所');
+  stat('p2-kits',fmt(res.deliveredKits)+' 人日分');stat('p2-used',res.usedTrucks+'台 / '+res.usedRounds+'回');
+  stat('p2-f1star',Number(res.f1Star).toFixed(7));stat('p2-f1route',Number(res.f1Route).toFixed(7));
+  stat('p2-gap',Number(res.f1Excess).toFixed(7));stat('p2-f3',fmt(res.f3));
+  stat('p2-north-stock',fmt(res.hubOutgoingKits[0])+' 人日分');stat('p2-south-stock',fmt(res.hubOutgoingKits[1])+' 人日分');
+  const msg=res.message+'　挿入法・順序GA・2-opt/Or-optによる近似探索です。移動時間は実道路でなく市街地距離による概算。';
+  const info=$('p2-info'); info.textContent=msg;info.className='p2-notice '+(res.isValidatedP2?'p2-success':'p2-warning');
+  $('p2-map-status').textContent=res.isValidatedP2?'η=0評価条件を満たす参考経路':'η=0評価条件未達の参考経路';
+  const round=$('p2-round'),truck=$('p2-truck');round.innerHTML='<option value="all">すべての配送回</option>'+Array.from({length:res.maxRounds},(_,i)=>`<option value="${i+1}">第${i+1}回</option>`).join('');
+  truck.innerHTML='<option value="all">すべての車両</option>'+Array.from({length:res.trucksConfigured},(_,i)=>`<option value="${i+1}">${i+1}号車</option>`).join('');
+  round.disabled=false;truck.disabled=false;round.value='all';truck.value='all';renderMap(res);renderTables(res);
+ }
+ function syncSelectedTour(){
+   const r=$('p2-round').value,t=$('p2-truck').value;
+   $('p2-vehicle-list').querySelectorAll('.p2-tour-item').forEach(el=>el.classList.toggle('selected',el.dataset.round===r&&el.dataset.truck===t));
+ }
+ for(const id of ['p2-round','p2-truck'])$(id).addEventListener('change',()=>{if(latest){renderMap(latest);syncSelectedTour()}});
+ $('p2-vehicle-list').addEventListener('click',event=>{
+   const tour=event.target.closest('.p2-tour-item');if(!tour||!latest)return;
+   const same=$('p2-round').value===tour.dataset.round&&$('p2-truck').value===tour.dataset.truck;
+   $('p2-round').value=same?'all':tour.dataset.round;
+   $('p2-truck').value=same?'all':tour.dataset.truck;
+   renderMap(latest);syncSelectedTour();
+ });
+ $('p2-start').addEventListener('click',async()=>{
+   const btn=$('p2-start');btn.disabled=true;btn.textContent='P2計算中…';$('p2-info').textContent='完全セットを使用して車両・配送回・訪問順を計算しています。';
+   try{
+     const req=makeInput();const r=await fetch('/api/p2-kits',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(req)});
+     const o=await r.json();if(!r.ok)throw Error(o.error||'計算に失敗しました。');
+     render(o);try{sessionStorage.setItem('p2Result',JSON.stringify({p1CreatedAt:a.createdAt,result:o}))}catch(e){console.warn(e)}
+   }catch(e){$('p2-info').textContent='計算できませんでした：'+e.message;$('p2-info').className='p2-notice p2-warning'}
+   finally{btn.disabled=!good;btn.textContent='P2の配送経路を再計算する'}
+ });
+ const prev=get('p2Result');if(good&&prev?.p1CreatedAt===a.createdAt&&prev?.result)render(prev.result);
+})();
+</script>
+{% endblock %}
