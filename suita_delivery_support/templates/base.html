@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}救援物資配送支援システム{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="{% if active_page == 'home' %}home-screen{% endif %}">
+<header class="topbar">
+    <div class="brand">救援物資配送支援システム</div>
+    <div class="today">{{ today }}</div>
+</header>
+
+<div class="app-shell">
+    {% from '_nav_icons.html' import menu_icon %}
+    <aside class="sidebar" aria-label="メインメニュー">
+        <a class="nav-item {% if active_page == 'home' %}active{% endif %}" href="{{ url_for('home') }}">{{ menu_icon('home') }}<span>ホーム</span></a>
+        <a class="nav-item {% if active_page == 'allocation' %}active{% endif %}" href="{{ url_for('allocation') }}">{{ menu_icon('allocation') }}<span>配分計画</span></a>
+        <a class="nav-item {% if active_page == 'plan' %}active{% endif %}" href="{{ url_for('plan') }}">{{ menu_icon('plan') }}<span>配送計画</span></a>
+        <a class="nav-item {% if active_page == 'routes' %}active{% endif %}" href="{{ url_for('routes_page') }}">{{ menu_icon('routes') }}<span>物資輸送経路</span></a>
+        <a class="nav-item {% if active_page == 'results' %}active{% endif %}" href="{{ url_for('results_page') }}">{{ menu_icon('results') }}<span>結果の表示</span></a>
+    </aside>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+</div>
+{% block scripts %}{% endblock %}
+</body>
+</html>
