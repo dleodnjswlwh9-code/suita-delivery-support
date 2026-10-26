@@ -1,0 +1,623 @@
+{% extends "base.html" %}
+{% block title %}物資輸送経路｜救援物資配送支援システム{% endblock %}
+{% block content %}
+<section class="v31-route-page p2-ui">
+  <div class="v31-heading-row"><h1>物資輸送経路</h1><a class="v31-back-link" href="{{ url_for('plan') }}">配送条件を変更 →</a></div>
+  <div class="v31-config-panel p2-settings">
+    <div class="v31-config-entries">
+      <div><span>対象避難所</span><strong id="p2-n">—</strong></div>
+      <div><span>輸送拠点</span><strong>2か所</strong></div>
+      <div><span>2tトラック</span><strong id="p2-t">—</strong></div>
+      <div><span>配送回数上限</span><strong id="p2-r">—</strong></div>
+      <div><span>支援物資</span><strong id="p2-supply">—</strong></div>
+    </div>
+    <div class="v31-config-action">
+      <label class="p2-mode-label" for="p2-road-mode">配送道路の選択
+        <select id="p2-road-mode">
+          <option value="all">すべての道路を利用</option>
+          <option value="emergency">緊急交通路を優先（準備中）</option>
+        </select>
+      </label>
+      <button id="p2-start" class="p2-start" type="button">配送経路を計算する →</button>
+      <span id="p2-setup-status" class="p2-settings-status" role="status"></span>
+    </div>
+  </div>
+  <div id="p2-info" class="p2-notice" role="status" aria-live="polite">配送条件を確認してください。</div>
+  <div class="p2-cardgrid">
+    <div class="p2-card p2-primary-card"><span>配送完了予定時間（F2）</span><strong id="p2-f2">—</strong><small id="p2-time-source">Google交通情報の取得前：距離÷20km/hによる暫定値</small></div>
+    <div class="p2-card"><span>訪問避難所</span><strong id="p2-visited">—</strong></div>
+    <div class="p2-card"><span>配送物資量</span><strong id="p2-kits">—</strong></div>
+    <div class="p2-card"><span>使用車両・配送回数</span><strong id="p2-used">—</strong></div>
+  </div>
+  <div class="p2-map-layout p2-map-layout-vertical">
+    <section class="p2-panel p2-route-panel p2-route-centered">
+      <div class="p2-row-title"><h2>車両別配送計画</h2><span id="p2-route-count" class="p2-small-status">—</span></div>
+      <div class="p2-round-controls">
+        <span class="p2-control-heading">配送回</span>
+        <div id="p2-round-tabs" class="p2-round-tabs" role="group" aria-label="配送回の選択"><button type="button" class="active" data-round="all" aria-pressed="true">全配送回</button></div>
+        <label class="p2-truck-filter">車両<select id="p2-truck" disabled><option value="all">すべての車両</option></select></label>
+        <select id="p2-round" class="p2-visually-hidden" aria-label="配送回" disabled><option value="all">全配送回</option></select>
+      </div>
+      <div id="p2-vehicle-list" class="p2-tour-list"><div class="p2-empty">計算すると配送順序を表示します。</div></div>
+    </section>
+    <section class="p2-panel p2-map-panel p2-map-fullwidth">
+      <div class="p2-row-title"><h2>配送経路・避難所の充足率</h2><span class="p2-small-status" id="p2-map-status">未計算</span></div>
+      <div class="p2-traffic-tools"><span id="p2-traffic-summary" aria-live="polite">実交通情報：未取得</span><label class="p2-traffic-toggle"><input type="checkbox" id="p2-traffic-layer"> 現在の渋滞状況を地図に表示</label><button id="p2-refresh-traffic" type="button" disabled>交通情報を更新</button></div>
+      <div class="p2-journey-toolbar" role="group" aria-label="経路区間の表示"><strong>経路表示</strong><button type="button" class="active" data-journey="all" aria-pressed="true">赤＋青</button><button type="button" data-journey="out" aria-pressed="false">① 配送のみ（赤）</button><button type="button" data-journey="back" aria-pressed="false">② 帰着のみ（青）</button><label class="p2-avoid-toggle"><input type="checkbox" id="p2-avoid-expressway"> 高速・有料道路を避ける</label><button type="button" id="p2-focus-first" title="先頭の出動車両のみを地図に表示">1台を詳しく見る</button><button type="button" id="p2-fit-route" title="道路経路全体が収まる縮尺に調整">全経路を表示</button></div>
+      <div class="p2-map-reading-guide" id="p2-map-reading-guide">
+        <span class="p2-guide-red">① 配送方向：拠点 → 最初の避難所 → 最後の避難所</span>
+        <span class="p2-guide-blue">② 帰着方向：最後の避難所 → 出発拠点</span>
+        <span class="p2-guide-hint">車両一覧から1台を選ぶと、経路・訪問順・往復の内訳を詳しく表示します。同じ道路を往復する場合は「配送」「帰着」を切り替えて確認してください。</span>
+      </div>
+      <div id="p2-route-detail" class="p2-route-detail" aria-live="polite" hidden></div>
+      <div id="p2-map-caption" class="p2-stage-caption">配送回・車両を選ぶと、該当する避難所のみを表示します。充足率は選択回終了時点の値です。</div>
+      <div id="p2-road-alert" class="p2-road-alert" role="status" aria-live="polite" hidden></div>
+      <div class="p2-mapbox" id="p2-mapbox">
+        {% if api_key %}<div id="p2-google-map" class="p2-google-map" aria-label="Google マップによる配送経路と避難所充足率"></div>
+        {% else %}<div class="p2-map-empty" id="p2-map-fallback">Google マップの利用には API キーが必要です。</div>{% endif %}
+      </div>
+      <div class="p2-route-key"><span class="p2-red-legend">① 赤い実線＋矢印：配送（最初～最後の避難所）</span><span class="p2-blue-legend">② 青い破線＋矢印：最終避難所→拠点</span><span><i class="p2-hub-dot"></i>輸送拠点</span><span><i class="p2-shelter-dot"></i>避難所：すべて同じ大きさ</span><span><i class="p2-green-dot"></i>緑色の割合：選択回終了時点の充足率</span><span id="p2-line-type">実線：Google道路経路（取得時点の交通予測をF2表示に反映。GAの訪問順は別計算）</span></div>
+    </section>
+  </div>
+  <details class="p2-panel p2-fold p2-stage-detail" id="p2-allocation-status"><summary>選択した配送回の配分状況を表で確認</summary>
+    <div class="p2-stage-caption" id="p2-table-stage">配送回を選んでください。</div>
+    <div class="p2-table-scroll"><table class="p2-table"><thead><tr><th>No.</th><th>避難所名</th><th>必要量</th><th>計画開始時の備蓄</th><th>表示中の車両・配送回の配送量</th><th>累計配送量</th><th>現在確保量</th><th>現在充足率</th><th>訪問回</th></tr></thead><tbody id="p2-shelter-table"></tbody></table></div>
+  </details>
+  <details class="p2-panel p2-fold"><summary>計算の検証データ</summary><div class="p2-verify"><div>理想配分の評価 <strong id="p2-f1star">—</strong></div><div>配送後の配分評価 <strong id="p2-f1route">—</strong></div><div>評価差 <strong id="p2-gap">—</strong></div><div>途中不足の評価 <strong id="p2-f3">—</strong></div><div>北部出庫 <strong id="p2-north-stock">—</strong></div><div>南部出庫 <strong id="p2-south-stock">—</strong></div></div></details>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+(()=>{
+ const $=id=>document.getElementById(id);
+ const fmt=n=>Number(n).toLocaleString('ja-JP',{maximumFractionDigits:1});
+ const html=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
+ const get=k=>{try{return JSON.parse(sessionStorage.getItem(k)||'null')}catch{return null}};
+ const a=get('allocationPlan'),settings=get('p1DeliverySettings');
+ const settingsMatch=!!settings&&Number(settings.t2)===Number(a?.p1DeliverySettings?.vehicles?.[0]?.count)&&
+   Number(settings.trips)===Number(a?.p1DeliverySettings?.trips)&&Number(settings.delta)===Number(a?.p1DeliverySettings?.delta);
+ // 配分・配送間で同じデータ形式識別子を参照し、旧版の取りこぼしを防ぐ。
+ const schemaReady=!!a&&a.version === {{ allocation_schema_version | tojson }}&&
+   Array.isArray(a?.food?.rows)&&Array.isArray(a?.stages)&&a.stages.length>0;
+ const good=schemaReady&&settingsMatch;
+ const notReadyMessage=()=>{
+   if(!a)return '配分計画を先に実行してください。';
+   if(!schemaReady)return '旧形式の配分結果です。配分計画を再計算してください。';
+   if(!settings)return '配送条件を保存してください。';
+   if(!settingsMatch)return '配送条件が配分結果と一致しません。配分計画を再計算してください。';
+   return '';
+ };
+ const food=a?.food?.rows||[];
+ $('p2-n').textContent=good?`${food.length}か所`:'—';
+ $('p2-t').textContent=settings?`${fmt(settings.t2)}台`:'—';
+ $('p2-r').textContent=settings?`${fmt(settings.trips)}回`:'—';
+ $('p2-supply').textContent=a?.stages?.[0]?`${fmt(a.stages[0].totalKg)}人日分`:'—';
+ const mode=$('p2-road-mode');mode.value=sessionStorage.getItem('p2RoadMode')==='emergency'?'emergency':'all';
+ let latest=null,gm=null,gmTrafficLayer=null,gmPolys=[],gmPins=[],gmPies=[],gmInfo=null,mapRequestId=0;
+ let journeyMode='all', drawnRoadPoints=[];
+ let avoidExpressways=false;
+ const ROAD_OUT='#d62833', ROAD_BACK='#246bda';
+ // Cache only for the current page and plan. Route geometry and traffic ETA belong to the same query.
+ const gmRoadCache=new Map();let gmRouteClassPromise=null;
+ const colors=['#2674c9','#dc7341','#23a27d','#9d63ca','#c9a02f','#338f95','#d45583','#667aaa','#af773a','#6eaaa5'];
+ function updateReady(){
+    const future=mode.value!=='all';
+    $('p2-start').disabled=!good||future;
+    $('p2-setup-status').textContent=future?'緊急交通路優先は未実装です。':notReadyMessage();
+    if(future){$('p2-info').textContent='緊急交通路優先は今後実装します。「すべての道路を利用」を選択してください。';$('p2-info').className='p2-notice p2-warning';}
+    else if(!latest){$('p2-info').textContent=good?'配送条件を確認して計算してください。':notReadyMessage();$('p2-info').className='p2-notice';}
+    else {renderStatus(latest)}
+ }
+ mode.addEventListener('change',()=>{
+     sessionStorage.setItem('p2RoadMode',mode.value);
+     if(mode.value!=='all'){
+        for(const id of ['p2-f2','p2-visited','p2-kits','p2-used'])$(id).textContent='—';
+        $('p2-vehicle-list').innerHTML='<div class="p2-empty">緊急交通路優先は準備中です。</div>';
+        $('p2-route-count').textContent='—';
+        $('p2-round').disabled=true;$('p2-truck').disabled=true;$('p2-round-tabs').innerHTML='<button type="button" disabled>未実装</button>';
+        if(gm){clearGoogle();$('p2-map-status').textContent='未計算'}
+        else {$('p2-mapbox').innerHTML='<div class="p2-map-empty">緊急交通路優先は準備中です。</div>'}
+     }else if(latest){render(latest)}
+     updateReady();
+ });
+ function makeInput(){
+    if(mode.value!=='all')throw new Error('緊急交通路優先は現在未実装です。');
+    const n=Number(settings.t2),r=Number(settings.trips),min=Number(settings.delta);
+    if(n!==Number(a.p1DeliverySettings?.vehicles?.[0]?.count)||r!==Number(a.p1DeliverySettings?.trips)||min!==Number(a.p1DeliverySettings?.delta))
+        throw new Error('配送条件が配分結果と一致しません。配分計画を再計算してください。');
+    return {shelters:food.map(row=>({name:row.name,lat:row.lat,lng:row.lng,
+      demandKits:Math.max(0,Math.round(row.stageDemandsKg?.[0]??row.demandKg)),
+      stockKits:Math.round(row.stageOpeningStocks?.[0]??row.initialStockKg),visited:false})),
+      totalKits:Math.floor(Number(a.stages[0].totalKg)),targetRate:Number(a.targetRate),rho:Number(a.rho),
+      minKits:min,maxRounds:r,truckCount:n,roadMode:'all',
+      p1ReferenceF1:a.food?.stageSummaries?.[0]?.objectiveF1??null};
+ }
+ function pointsForRoute(res,r){
+   const hub=res.hubs[r.hub];return [{lat:Number(hub.lat),lng:Number(hub.lng)},...r.stops.map(p=>({lat:Number(p.lat),lng:Number(p.lng)})),{lat:Number(hub.lat),lng:Number(hub.lng)}];
+ }
+ // The green area shows the fulfillment rate after the selected round; P2 markers have a fixed size.
+ // The chosen round is inclusive: round 2 shows stocks after rounds 1 and 2.
+ function roundSnapshot(res){
+   const selected=$('p2-round').value,limit=selected==='all'?res.maxRounds:Number(selected);
+   const add=new Array(res.shelters.length).fill(0),visit=new Array(res.shelters.length).fill(0);
+   const current=new Array(res.shelters.length).fill(0);
+   const previous=new Array(res.shelters.length).fill(0);
+   const allVisited=new Array(res.shelters.length).fill('');
+   for(const route of res.routes){
+      if(route.round>limit)continue;
+      for(const stop of route.stops){
+         add[stop.index]+=stop.kits;visit[stop.index]+=1;
+         if(route.round===limit)current[stop.index]+=stop.kits;
+         if(route.round<limit)previous[stop.index]+=stop.kits;
+         allVisited[stop.index]+=(allVisited[stop.index]?'、':'')+`第${route.round}回`;
+      }
+   }
+   const stage=selected==='all'?'全配送回終了時点':`第${limit}回終了時点`;
+   const rows=res.shelters.map((s,i)=>({ ...s,roundKits:selected==='all'?add[i]:current[i],
+       cumulativeKits:add[i],stockNow:s.stockKits+add[i],rate:s.demandKits>0?(s.stockKits+add[i])/s.demandKits:0,zeroDemand:s.demandKits===0,
+       visitedRounds:allVisited[i]||'—'}));
+   return {rows,stage,limit,delivered:add.reduce((x,y)=>x+y,0)};
+ }
+ // In a filtered view only mark shelters that the displayed truck(s) actually visit.
+ // Coverage rate remains the cumulative plan-wide coverage at the selected round.
+ function displayedShelterIndexes(res,show){
+    if($('p2-round').value==='all' && $('p2-truck').value==='all')return new Set(res.shelters.map((_,i)=>i));
+    return new Set(show.flatMap(rt=>rt.stops.map(stop=>stop.index)));
+ }
+ function selectedRoutes(res){
+    const r=$('p2-round').value,t=$('p2-truck').value;
+    return res.routes.filter(p=>(r==='all'||String(p.round)===r)&&(t==='all'||String(p.truck)===t));
+ }
+ function selectionDescription(show){
+    const r=$('p2-round').value,t=$('p2-truck').value;
+    if(r==='all'&&t==='all')return '全避難所';
+    if(r!=='all'&&t!=='all')return `第${r}回・${t}号車の訪問先のみ`;
+    if(r!=='all')return `第${r}回の訪問先のみ`;
+    return `${t}号車の訪問先のみ`;
+ }
+ function displayedSnapshotRows(res,show){
+    const snapshot=roundSnapshot(res),indices=displayedShelterIndexes(res,show),quantities=new Map();
+    for(const rt of show)for(const stop of rt.stops)quantities.set(stop.index,(quantities.get(stop.index)||0)+stop.kits);
+    return snapshot.rows.map((row,i)=>({...row,selectedKits:quantities.get(i)||0})).filter((_,i)=>indices.has(i));
+ }
+ function pieSvg(cx,cy,r,rate){
+   const v=Math.min(1,Math.max(0,rate));let wedge='';
+   if(v>=0.999999)wedge=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="#16a36d" fill-opacity=".83"/>`;
+   else if(v>0){const th=2*Math.PI*v,x=cx+r*Math.sin(th),y=cy-r*Math.cos(th);
+      wedge=`<path d="M ${cx} ${cy} L ${cx} ${cy-r} A ${r} ${r} 0 ${th>Math.PI?1:0} 1 ${x} ${y} Z" fill="#16a36d" fill-opacity=".83"/>`;
+   }
+   return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#fff"/>${wedge}<circle cx="${cx}" cy="${cy}" r="${r}" stroke="#27394a" stroke-width="1.2" fill="none"/>`;
+ }
+ // P2 is a route map: keep shelters uniformly small so driving paths remain visible.
+ const P2_SHELTER_RADIUS_PX=6;
+ function markerRadius(){return P2_SHELTER_RADIUS_PX;}
+ function fullStopOrder(res,rt){
+    const cached=gmRoadCache.get(roadCacheKey(res,rt));
+    return cached?.orderedStops || rt.stops;
+ }
+ function updateRouteCards(res){
+    document.querySelectorAll('#p2-vehicle-list .p2-tour-item').forEach(el=>{
+       const rt=res.routes.find(r=>String(r.round)===el.dataset.round&&String(r.truck)===el.dataset.truck);
+       if(!rt)return;
+       const cached=gmRoadCache.get(roadCacheKey(res,rt));
+       const seq=fullStopOrder(res,rt).map(s=>s.name);
+       const hub=rt.hub===0?'北部拠点':'南部拠点';
+       const path=`${hub}（出発） → ${seq.join(' → ')} → ${hub}（帰着）`;
+       const pathEl=el.querySelector('.p2-tour-path');
+       if(pathEl){pathEl.textContent=path;pathEl.title=path;}
+       const badge=el.querySelector('.p2-order-note');
+       if(badge)badge.textContent=cached?.reordered?'Google道路時間で訪問順を改善':cached?'Google道路経路を取得':'GAの訪問順（暫定）';
+    });
+ }
+ function selectionRouteDetail(res,show){
+    const el=$('p2-route-detail');
+    if(show.length!==1){el.hidden=true;el.innerHTML='';return;}
+    const rt=show[0],cached=gmRoadCache.get(roadCacheKey(res,rt));
+    const seq=fullStopOrder(res,rt),hub=rt.hub===0?'北部拠点':'南部拠点';
+    const nodes=[`<strong class="p2-seq-hub">出発：${hub}</strong>`,...seq.map((p,i)=>`<span class="p2-seq-stop">${i+1}. ${html(p.name)}</span>`),`<strong class="p2-seq-hub">帰着：${hub}</strong>`];
+    const legs=cached?.legs||[];
+    const legHTML=legs.map((leg,i)=>{
+       const from=i===0?hub:seq[i-1]?.name||hub;
+       const to=i===legs.length-1?hub:seq[i]?.name||hub;
+       const style=leg.isReturn?'back':'out';
+       return `<div class="p2-leg-row ${style}"><strong>${html(from)} → ${html(to)}</strong><span>${leg.distanceKm===null?'—':fmt(leg.distanceKm)} km / ${leg.trafficMinutes===null?'—':fmt(leg.trafficMinutes)+'分'}</span>${leg.suspicious?'<em>大きな迂回：要確認</em>':''}</div>`;
+    }).join('');
+    const last=seq.length?seq[seq.length-1].name:hub;
+    const outPath=seq.length?`${hub} → ${seq.map((stop,i)=>`${i+1}. ${stop.name}`).join(' → ')}`:hub;
+    const backPath=`${last} → ${hub}`;
+    const outKm=cached?.legs?.slice(0,-1).reduce((sum,leg)=>sum+(leg.distanceKm||0),0);
+    const backKm=cached?.legs?.at(-1)?.distanceKm;
+    const unit=(km)=>Number.isFinite(km)?` · ${fmt(km)} km`:' · Google道路取得前';
+    el.innerHTML=`<div class="p2-route-detail-title">第${rt.round}回 · ${rt.truck}号車｜出発～帰着の全区間 <small>${cached?.reordered?'Google道路時間で順序調整':cached?'Google実道路で確認':'仮の訪問順（実道路取得前）'}</small></div>
+      <div class="p2-trip-split"><div class="p2-trip-out"><strong>① 配送（赤）${unit(outKm)}</strong><span>${html(outPath)}</span></div>
+      <div class="p2-trip-back"><strong>② 拠点へ帰着（青）${unit(backKm)}</strong><span>${html(backPath)}</span></div></div>
+      <div class="p2-legs-title">全訪問順序（番号は地図の避難所番号と一致）</div><div class="p2-sequence-wrap">${nodes.join('<b>→</b>')}</div>
+      ${cached?`<div class="p2-legs-title">各道路区間（出発から帰着まで省略なし）</div><div class="p2-leg-list">${legHTML}</div>`:''}`;
+    el.hidden=false;
+ }
+ function fallbackDiagram(res,show){
+   const subset=displayedSnapshotRows(res,show),hubsToDraw=show.length===1?[res.hubs[show[0].hub]]:res.hubs;
+   const pts=[...hubsToDraw,...subset],xs=pts.map(p=>Number(p.lng)),ys=pts.map(p=>Number(p.lat));
+   const lo=Math.min(...xs)-.007,hi=Math.max(...xs)+.007,b=Math.min(...ys)-.005,t=Math.max(...ys)+.005;
+   const X=l=>60+1060*(l-lo)/(hi-lo),Y=l=>620-550*(l-b)/(t-b);
+   const paths=show.map(r=>{
+     const all=pointsForRoute(res,r),colorOut='#d62833',colorBack='#246bda';
+     const outbound=all.slice(0,-1).map(p=>`${X(p.lng).toFixed(1)},${Y(p.lat).toFixed(1)}`).join(' ');
+     const back=all.slice(-2).map(p=>`${X(p.lng).toFixed(1)},${Y(p.lat).toFixed(1)}`).join(' ');
+     return `${journeyMode!=='back'?`<polyline points="${outbound}" fill="none" stroke="${colorOut}" stroke-width="3.6" stroke-dasharray="7,4"/>`:''}${journeyMode!=='out'?`<polyline points="${back}" fill="none" stroke="${colorBack}" stroke-width="3.6" stroke-dasharray="4,5"/>`:''}`;
+   }).join('');
+   const dots=subset.map(p=>{
+     const x=X(Number(p.lng)),y=Y(Number(p.lat)),r=markerRadius();
+     return `<g>${pieSvg(x,y,r,p.rate)}<title>${html(p.name)}：${Math.round(p.rate*1000)/10}%・累計配送${p.cumulativeKits}人日分</title></g>`;
+   }).join('');
+   const hubs=hubsToDraw.map(h=>`<g><rect x="${X(h.lng)-8}" y="${Y(h.lat)-8}" width="16" height="16" rx="3" fill="#263c56"/><text x="${X(h.lng)+12}" y="${Y(h.lat)-12}" font-size="17" font-weight="700">${h.id===0?'北部':'南部'}</text></g>`).join('');
+   $('p2-mapbox').innerHTML=`<svg viewBox="0 0 1180 665" xmlns="http://www.w3.org/2000/svg" aria-label="配送経路と回別充足率の概略図"><rect width="1180" height="665" fill="#eef4f4"/>${paths}${dots}${hubs}<text x="22" y="645" fill="#496477" font-size="16">概略図：道路に沿った走行経路ではありません</text></svg>`;
+ }
+ function clearGoogle(){
+    // Stop pending road-drawing jobs from adding lines for an obsolete selection.
+    mapRequestId++;
+    gmPolys.forEach(p=>p.setMap(null));gmPolys=[];drawnRoadPoints=[];
+    gmPins.forEach(p=>p.setMap(null));gmPins=[];gmPies.forEach(p=>p.setMap(null));gmPies=[];
+ }
+ function googlePie(map,record){
+    const overlay=new google.maps.OverlayView();
+    const pos={lat:Number(record.lat),lng:Number(record.lng)};
+    const radius=markerRadius(),padding=2,c=radius+padding,size=c*2;
+    let node=null;
+    overlay.onAdd=function(){
+       node=document.createElement('div');node.className='p2-pie-map-marker';
+       node.style.width=`${size}px`;node.style.height=`${size}px`;
+       node.innerHTML=`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true">${pieSvg(c,c,radius,record.rate)}</svg>${record.seqNo?`<span class="p2-stop-number">${record.seqNo}</span>`:''}`;
+       node.tabIndex=0;node.setAttribute('role','button');
+       node.setAttribute('aria-label',`${record.name}：充足率${record.zeroDemand?'対象外（需要0人日分）':(record.rate*100).toFixed(1)+'%'}`);
+       const open=()=>{
+          if(!gmInfo)gmInfo=new google.maps.InfoWindow();
+          gmInfo.setContent(`<div class="p2-popup"><strong>${html(record.name)}</strong><div>必要量：${fmt(record.demandKits)} 人日分</div><div>計画開始時の備蓄：${fmt(record.stockKits)} 人日分</div><div>累計配送：${fmt(record.cumulativeKits)} 人日分</div><div>現在の充足率：${record.zeroDemand?'対象外（需要0人日分）':(record.rate*100).toFixed(1)+'%'}</div></div>`);
+          gmInfo.setPosition(pos);gmInfo.open(map);
+       };
+       node.addEventListener('click',open);
+       node.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();open()}});
+       this.getPanes().overlayMouseTarget.appendChild(node);
+    };
+    overlay.draw=function(){if(!node)return;const xy=this.getProjection().fromLatLngToDivPixel(pos);if(!xy)return;node.style.left=`${xy.x}px`;node.style.top=`${xy.y}px`};
+    overlay.onRemove=function(){node?.remove();node=null};
+    overlay.setMap(map);return overlay;
+ }
+ // Google Maps JavaScript Routes Library: request actual DRIVING routes following streets.
+ // Route.computeRoutes (current API) works for new Google Cloud projects where legacy
+ // DirectionsService is unavailable. Where possible, refine the GA order with Google street-time optimization.
+ async function googleRouteClass(){
+    if(!gmRouteClassPromise)gmRouteClassPromise=google.maps.importLibrary('routes').then(lib=>{
+       if(!lib.Route || typeof lib.Route.computeRoutes!=='function')throw Error('Google Routes Libraryが使用できません。');
+       return lib.Route;
+    }).catch(e=>{gmRouteClassPromise=null;throw e});
+    return gmRouteClassPromise;
+ }
+ function roadCacheKey(res,rt){
+    const pts=pointsForRoute(res,rt);
+    return [avoidExpressways?'avoid-expressway':'normal',rt.round,rt.truck,rt.hub,...pts.map(p=>`${p.lat.toFixed(6)},${p.lng.toFixed(6)}`)].join('|');
+ }
+ function pointOf(p){
+    const lat=Number(typeof p.lat==='function'?p.lat():p.lat),lng=Number(typeof p.lng==='function'?p.lng():p.lng);
+    return {lat,lng};
+ }
+ function airDistanceKm(a,b){
+    const r=Math.PI/180,dy=(b.lat-a.lat)*r,dx=(b.lng-a.lng)*r;
+    const q=Math.sin(dy/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dx/2)**2;
+    return 12742*Math.asin(Math.min(1,Math.sqrt(q)));
+ }
+ async function googleRoadPaths(res,rt){
+    const key=roadCacheKey(res,rt);
+    if(gmRoadCache.has(key))return gmRoadCache.get(key);
+    const Route=await googleRouteClass();
+    const pts=pointsForRoute(res,rt),legs=[];
+    let travelMillis=0,distanceMeters=0,trafficComplete=true;
+    let orderedStops=rt.stops.slice(),reordered=false;
+    // Route API supports at most 25 intermediate stops. With small tours,
+    // let Google reorder the *same assigned* shelter stops using real streets.
+    // Large tours remain in GA order and are split into contiguous requests.
+    const canOptimize=rt.stops.length>=2&&rt.stops.length<=25;
+    for(let first=0;first<pts.length-1;first+=26){
+       const nodes=pts.slice(first,Math.min(first+27,pts.length));
+       const req={origin:nodes[0],destination:nodes[nodes.length-1],travelMode:'DRIVING',
+         routingPreference:'TRAFFIC_AWARE',
+         routeModifiers:{avoidHighways:avoidExpressways,avoidTolls:avoidExpressways},
+         intermediates:nodes.slice(1,-1).map(p=>({location:p})),
+         optimizeWaypointOrder:canOptimize,
+         polylineQuality:'HIGH_QUALITY',
+         fields:['path','legs','durationMillis','distanceMeters','optimizedIntermediateWaypointIndices']};
+       // Fall back to GA order on API projects not permitting optimized routes.
+       let answer;
+       try{answer=await Route.computeRoutes(req);}
+       catch(e){if(!canOptimize)throw e;req.optimizeWaypointOrder=false;answer=await Route.computeRoutes(req);}
+       const chosen=answer?.routes?.[0];
+       if(!chosen || !Array.isArray(chosen.legs) || chosen.legs.length!==nodes.length-1)
+          throw Error('Googleが道路区間の全データを返しませんでした。表示を省略しました。');
+       if(chosen.legs.some(l=>!Array.isArray(l.path)||l.path.length<2))
+          throw Error('Googleの道路形状が一部欠落しています。');
+       if(canOptimize&&req.optimizeWaypointOrder){
+          const arr=chosen.optimizedIntermediateWaypointIndices;
+          if(!Array.isArray(arr)||arr.length!==rt.stops.length||
+              new Set(arr).size!==rt.stops.length||arr.some(x=>!Number.isInteger(x)||x<0||x>=rt.stops.length))
+             throw Error('Googleから最適化後の訪問順序を取得できません。');
+          orderedStops=arr.map(i=>rt.stops[i]);
+          reordered=arr.some((x,i)=>x!==i);
+       }
+       const orderedNodes=canOptimize&&req.optimizeWaypointOrder?
+          [nodes[0],...orderedStops.map(x=>({lat:Number(x.lat),lng:Number(x.lng)})),nodes[nodes.length-1]]:nodes;
+       for(let j=0;j<chosen.legs.length;j++){
+          const l=chosen.legs[j],coords=l.path.map(pointOf);
+          const lengthKm=Number(l.distanceMeters)/1000;
+          const realMin=Number(l.durationMillis)/60000;
+          const airKm=airDistanceKm(orderedNodes[j],orderedNodes[j+1]);
+          legs.push({path:coords,distanceKm:Number.isFinite(lengthKm)?lengthKm:null,
+             trafficMinutes:Number.isFinite(realMin)&&realMin>0?realMin:null,
+             suspicious:Number.isFinite(lengthKm)&&lengthKm>3.0*Math.max(.3,airKm)&&lengthKm>3,
+             isReturn: first+j===pts.length-2});
+       }
+       const t=Number(chosen.durationMillis),d=Number(chosen.distanceMeters);
+       if(!Number.isFinite(t)||t<=0){trafficComplete=false;}else{travelMillis+=t;}
+       if(Number.isFinite(d)&&d>=0)distanceMeters+=d;
+    }
+    // The last leg must return to the departure hub. Never silently omit it.
+    if(legs.length!==rt.stops.length+1 || !legs[legs.length-1].isReturn)
+       throw Error('帰着区間が不足しています。経路表示を中止しました。');
+    const routeData={legs,orderedStops,reordered,travelMinutes:trafficComplete?travelMillis/60000:null,
+       distanceKm:distanceMeters/1000,fetchedAt:Date.now()};
+    gmRoadCache.set(key,routeData);
+    return routeData;
+ }
+ function prettyMinutes(minutes){
+    return minutes>=60?`${Math.floor(minutes/60)}時間${Math.round(minutes%60)}分`:`${fmt(minutes)}分`;
+ }
+ function trafficRouteMinutes(res,rt){
+    const cached=gmRoadCache.get(roadCacheKey(res,rt));
+    if(!cached || !Number.isFinite(cached.travelMinutes))return null;
+    // Physical handling costs stay as in the original P2 model; only road travel is replaced.
+    const workMin=30+15*rt.stops.length+0.04*rt.kits;
+    return cached.travelMinutes+workMin;
+ }
+ function trafficPlanSignature(res){
+    return res.routes.map(rt=>[rt.round,rt.truck,rt.hub,rt.kits,...rt.stops.map(s=>`${s.index}:${s.kits}`)].join('/')).join('||');
+ }
+ function updateTrafficTimes(res){
+    if(!res)return;
+    const total=res.routes.length;
+    const ready=res.routes.filter(rt=>trafficRouteMinutes(res,rt)!==null).length;
+    const complete=ready===total && total>0;
+    let f2=Number(res.f2Minutes);
+    if(complete){
+       f2=0;
+       for(let round=1;round<=res.maxRounds;round++){
+          const times=res.routes.filter(rt=>rt.round===round).map(rt=>trafficRouteMinutes(res,rt));
+          f2+=Math.max(0,...times);
+       }
+    }
+    // Save a separate traffic evaluation, never overwrite the Python P2 reference output.
+    const stored=get('p2Result'),signature=trafficPlanSignature(res);
+    if(stored?.result && stored.p1CreatedAt===a.createdAt && trafficPlanSignature(stored.result)===signature){
+       if(complete){
+          const timings=res.routes.map(rt=>({round:rt.round,truck:rt.truck,
+              timeMin:trafficRouteMinutes(res,rt),orderedStopIndexes:fullStopOrder(res,rt).map(s=>s.index)}));
+          stored.traffic={source:'google-traffic-aware',signature,f2Minutes:Math.round(f2*100)/100,
+             routes:timings,evaluatedAt:new Date().toISOString(),departureAssumption:'now-per-trip',avoidExpressways};
+       }else if(stored.traffic){delete stored.traffic;}
+       try{sessionStorage.setItem('p2Result',JSON.stringify(stored))}catch(e){console.warn(e)}
+    }
+    $('p2-f2').textContent=prettyMinutes(f2);
+    $('p2-time-source').textContent=complete?
+       `Google実道路＋交通情報を反映（${avoidExpressways?'高速・有料道路を回避する条件／':'通常条件／'}取得時点・各回を現在出発として評価）`:
+       `暫定値：市街地距離÷20km/h（交通情報 ${ready}/${total}台取得）`;
+    $('p2-traffic-summary').textContent=complete?
+       `Google交通予測：全${total}出動分を取得（各回の出発時刻は同一の現在時刻と仮定）`:
+       `Google交通予測：${ready}/${total}出動分取得。F2は暫定値のままです。`;
+    $('p2-vehicle-list').querySelectorAll('.p2-tour-item').forEach(el=>{
+       const rt=res.routes.find(r=>String(r.round)===el.dataset.round&&String(r.truck)===el.dataset.truck);
+       if(!rt)return;
+       const m=trafficRouteMinutes(res,rt),label=el.querySelector('.p2-tour-time-label');
+       const strong=el.querySelector('.p2-tour-head strong');
+       if(strong)strong.textContent=m===null?`${fmt(rt.timeMin)}分`:`${fmt(m)}分`;
+       if(label)label.textContent=m===null?'距離式（暫定）':'Google交通予測';
+    });
+ }
+ const roadAlert=(message)=>{const el=$('p2-road-alert');el.hidden=!message;el.textContent=message||'';};
+ function drawRouteLeg(leg,single){
+    if(journeyMode==='out'&&leg.isReturn || journeyMode==='back'&&!leg.isReturn)return;
+    const color=leg.isReturn?ROAD_BACK:ROAD_OUT;
+    // Make blue return arrows legible even where outbound and inbound share a road.
+    // Do not draw a solid white casing over the outbound red line on shared roads.
+    const casing=new google.maps.Polyline({path:leg.path,strokeColor:'#ffffff',strokeWeight:single?9:6,
+       strokeOpacity:leg.isReturn?.15:.92,zIndex:7,clickable:false,map:gm});
+    const main=new google.maps.Polyline({path:leg.path,strokeColor:color,strokeWeight:single?6:4,
+       strokeOpacity:.98,zIndex:8,clickable:false,map:gm,
+       ...(leg.isReturn?{strokeOpacity:0,icons:[{icon:{path:'M 0,-1 0,1',strokeColor:color,strokeOpacity:1,strokeWeight:3.4,scale:2.25},offset:'0',repeat:'19px'}]}:{})});
+    // Arrowheads communicate direction even when both roads overlap.
+    const arrow=new google.maps.Polyline({path:leg.path,strokeOpacity:0,zIndex:9,map:gm,clickable:false,
+       icons:[{icon:{path:google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale:single?3.5:2.6,
+          fillColor:'#ffffff',fillOpacity:1,strokeColor:color,strokeWeight:1.2},offset:'24%',repeat:single?'65px':'105px'}]});
+    gmPolys.push(casing,main,arrow);
+    drawnRoadPoints.push(...leg.path);
+ }
+ function fitVisibleRoads(){
+    if(!gm)return;
+    const bounds=new google.maps.LatLngBounds();
+    const ps=drawnRoadPoints.length?drawnRoadPoints:(latest?selectedRoutes(latest).flatMap(rt=>pointsForRoute(latest,rt)):[]);
+    for(const pt of ps)bounds.extend(pt);
+    if(ps.length)gm.fitBounds(bounds,54);
+ }
+ function refreshSelectedShelterNumbers(res,show){
+    if(!gm||show.length!==1)return;
+    gmPies.forEach(p=>p.setMap(null));gmPies=[];
+    const order=fullStopOrder(res,show[0]);
+    const positions=new Map(order.map((s,i)=>[s.index,i+1]));
+    for(const record of displayedSnapshotRows(res,show))gmPies.push(googlePie(gm,{...record,seqNo:positions.get(record.index)}));
+ }
+ async function renderGoogleRoads(res,show,token){
+    const info=$('p2-map-status'),kind=$('p2-line-type');
+    if(!show.length){info.textContent='対象車両なし';kind.textContent='Google道路経路';return;}
+    info.textContent=`Google 道路経路を取得中 0/${show.length}`;
+    kind.textContent='赤の実線：配送区間／青の点線：拠点への帰着（Google実道路・交通予測）';
+    let success=0,failed=0,firstError='',detours=[];
+    for(const rt of show){
+       if(token!==mapRequestId)return;
+       try{
+          const data=await googleRoadPaths(res,rt);
+          if(token!==mapRequestId)return;
+          for(const leg of data.legs){drawRouteLeg(leg,show.length===1);}
+          if(data.legs.some(l=>l.suspicious))detours.push(`第${rt.round}回${rt.truck}号車`);
+          success++;
+          updateRouteCards(res);updateTrafficTimes(res);
+          if(show.length===1){refreshSelectedShelterNumbers(res,show);selectionRouteDetail(res,show);}
+       }catch(e){
+          if(token!==mapRequestId)return;
+          failed++;firstError ||= String(e?.message||e);updateTrafficTimes(res);
+          console.warn('Google Routes API: ',e);
+       }
+       if(token!==mapRequestId)return;
+       info.textContent=`Google 道路経路 ${success}/${show.length}（取得中）`;
+       if(success+failed<show.length)await new Promise(resolve=>setTimeout(resolve,160));
+    }
+    if(token!==mapRequestId)return;
+    if(success)fitVisibleRoads();
+    const notices=[];
+    if(failed)notices.push(`道路の全区間を取得できなかった車両：${failed}件。直線で代用していません。${firstError?'（'+firstError.slice(0,160)+'）':''}`);
+    if(detours.length)notices.push(`大きな迂回区間があります：${detours.join('、')}。道路規制、出入口、避難所の座標を確認してください。`);
+    info.textContent=success?`Google 道路経路 ${success}/${show.length}件（出発～帰着）`:'Google 道路経路を取得できません';
+    roadAlert(notices.join(' '));
+ }
+ function renderGoogle(res,show){
+    clearGoogle();const token=mapRequestId;
+    roadAlert('');
+    const bounds=new google.maps.LatLngBounds();
+    const single=show.length===1;
+    for(const hub of res.hubs){const pos={lat:Number(hub.lat),lng:Number(hub.lng)};if(!single || show[0].hub===hub.id)bounds.extend(pos);
+       if(!single || show[0].hub===hub.id)gmPins.push(new google.maps.Marker({map:gm,position:pos,title:hub.name,label:{text:hub.id===0?'北':'南',color:'#fff'},zIndex:999}));}
+    const displayed=displayedSnapshotRows(res,show);
+    const seqMap=single?new Map(fullStopOrder(res,show[0]).map((p,i)=>[p.index,i+1])):new Map();
+    if(single){for(const p of pointsForRoute(res,show[0]))bounds.extend(p);}
+    for(const record of displayed){if(!single)bounds.extend({lat:Number(record.lat),lng:Number(record.lng)});gmPies.push(googlePie(gm,{...record,seqNo:seqMap.get(record.index)}));}
+    gm.fitBounds(bounds,30);
+    // No google.maps.Polyline({path:pointsForRoute(...)}) here: it drew straight lines.
+    // Only display real roads obtained from Google's routing service.
+    void renderGoogleRoads(res,show,token);
+ }
+ function renderMap(res){
+    const show=selectedRoutes(res),snap=roundSnapshot(res),visible=displayedShelterIndexes(res,show);
+    const individual=$('p2-round').value!=='all'||$('p2-truck').value!=='all';
+    const amount=individual?show.reduce((sum,rt)=>sum+rt.kits,0):snap.delivered;
+    const directions=journeyMode==='out'?'① 赤・配送方向のみ':journeyMode==='back'?'② 青・拠点への帰着のみ':'① 赤・配送 ＋ ② 青・帰着';
+    $('p2-map-caption').textContent=`${selectionDescription(show)}（${visible.size}か所）｜${directions}｜配送量：${fmt(amount)} 人日分／充足率：${snap.stage}（全車両の累計）`;
+    selectionRouteDetail(res,show);
+    if(gm)renderGoogle(res,show);else if($('p2-google-map')){$('p2-map-status').textContent='Google マップを読み込み中';}
+    else {fallbackDiagram(res,show);$('p2-map-status').textContent='概略図（Google APIキーなし）';$('p2-line-type').textContent='点線：道路形状ではありません';roadAlert('Google Maps APIキーがないため道路経路は取得できません。これは概略線です。');}
+ }
+ window.p2GoogleMapFailure=()=>{gm=null;if(latest){fallbackDiagram(latest,selectedRoutes(latest));$('p2-map-status').textContent='Google マップ未使用・概略図';roadAlert('Google マップを読み込めません。APIキーと許可ドメイン、請求設定を確認してください。概略線は実際の道路ではありません。');}};
+ window.initP2GoogleMap=()=>{
+    const el=$('p2-google-map');if(!el||!window.google?.maps)return;
+    gm=new google.maps.Map(el,{center:{lat:34.77,lng:135.525},zoom:12,mapTypeControl:false,streetViewControl:false,fullscreenControl:true});
+    // TrafficLayer is a visualization only; ETA values come from TRAFFIC_AWARE routes.
+    if(typeof google.maps.TrafficLayer==='function'){
+       gmTrafficLayer=new google.maps.TrafficLayer({autoRefresh:true});
+       gmTrafficLayer.setMap($('p2-traffic-layer').checked?gm:null);
+    }
+    if(latest)renderMap(latest);
+ };
+ function renderTables(res){
+    $('p2-vehicle-list').innerHTML=res.routes.map(r=>`<button type="button" class="p2-tour-item" data-round="${r.round}" data-truck="${r.truck}" aria-label="第${r.round}回 ${r.truck}号車を表示"><span class="p2-tour-head"><span class="p2-tour-id"><i class="p2-tour-color" style="background:${colors[(r.truck-1)%colors.length]}"></i>第${r.round}回 · ${r.truck}号車</span><span class="p2-tour-time"><strong>${fmt(r.timeMin)}分</strong><small class="p2-tour-time-label">距離式（暫定）</small></span></span><span class="p2-tour-path" title="${html(r.stops.map(s=>s.name).join(' → '))}">${r.hub===0?'北部':'南部'} → ${html(r.stops.map(s=>s.name).join(' → '))} → ${r.hub===0?'北部':'南部'}</span><span class="p2-order-note">GAの訪問順（暫定）</span><span class="p2-tour-foot">${r.stops.length}か所訪問 <span>${fmt(r.kits)} 人日分</span></span></button>`).join('')||'<div class="p2-empty">配送する車両はありません。</div>';
+    updateRouteCards(res);
+    updateSnapshotTable(res);
+ }
+ function updateSnapshotTable(res){
+    const snap=roundSnapshot(res),show=selectedRoutes(res),shown=displayedSnapshotRows(res,show);
+    $('p2-table-stage').textContent=`${selectionDescription(show)}：${shown.length}か所　／　充足率：${snap.stage}（全車両累計）`;
+    $('p2-shelter-table').innerHTML=shown.map((s,i)=>`<tr><td>${i+1}</td><td class="p2-shelter-name">${html(s.name)}</td><td>${fmt(s.demandKits)}</td><td>${fmt(s.stockKits)}</td><td>${fmt(s.selectedKits)}</td><td>${fmt(s.cumulativeKits)}</td><td>${fmt(s.stockNow)}</td><td class="p2-rate-cell"><div class="p2-rate-bullet" style="--p2-rate:${Math.max(0,Math.min(100,100*s.rate))}%"></div>${s.zeroDemand?'—':(100*s.rate).toFixed(1)+'%'}</td><td>${s.visitedRounds}</td></tr>`).join('');
+ }
+ function renderRoundTabs(res){
+   $('p2-round-tabs').innerHTML=`<button type="button" data-round="all" aria-pressed="true">全配送回</button>`+
+      Array.from({length:res.usedRounds},(_,i)=>`<button type="button" data-round="${i+1}" aria-pressed="false">第${i+1}回</button>`).join('');
+   updateTabSelection();
+ }
+ function updateTabSelection(){const v=$('p2-round').value;
+   $('p2-round-tabs').querySelectorAll('[data-round]').forEach(btn=>{const chosen=btn.dataset.round===v;btn.classList.toggle('active',chosen);btn.setAttribute('aria-pressed',chosen?'true':'false')});
+ }
+ function applySelection(){if(!latest)return;
+    const r=$('p2-round').value,t=$('p2-truck').value;
+    const list=$('p2-vehicle-list').querySelectorAll('.p2-tour-item');let visible=0;
+    list.forEach(el=>{const show=(r==='all'||el.dataset.round===r)&&(t==='all'||el.dataset.truck===t);
+       el.hidden=!show;if(show)visible++;el.classList.toggle('selected',el.dataset.round===r&&el.dataset.truck===t)});
+    $('p2-route-count').textContent=`${visible} 出動`;
+    updateTabSelection();updateSnapshotTable(latest);renderMap(latest);
+ }
+ function stat(id,v){$(id).textContent=v}
+ function renderStatus(res){
+    const info=$('p2-info');
+    const details=`最小配送単位δ：${get('p1DeliverySettings')?.delta||'—'}人日分／必須訪問${res.mandatoryShelters??'—'}か所／最低必要${res.minimumRequiredKits??'—'}人日分。`;
+    info.textContent=(res.isValidatedP2?'配送経路を計算しました。':'参考配送案：P0未実装のため配分評価の許容条件は未保証です。')+' '+details;
+    info.className='p2-notice '+(res.isValidatedP2?'p2-success':'p2-warning');
+ }
+ function render(res){if(latest!==res)gmRoadCache.clear();latest=res;
+    stat('p2-f2',prettyMinutes(res.f2Minutes));
+    stat('p2-visited',res.visitedShelters+' / '+res.shelterCount+' か所');
+    stat('p2-kits',fmt(res.deliveredKits)+' 人日分');stat('p2-used',res.usedTrucks+'台 / '+res.usedRounds+'回');
+    stat('p2-f1star',Number(res.f1Star).toFixed(6));stat('p2-f1route',Number(res.f1Route).toFixed(6));
+    stat('p2-gap',Number(res.f1Excess).toFixed(6));stat('p2-f3',fmt(res.f3));
+    stat('p2-north-stock',fmt(res.hubOutgoingKits[0])+' 人日分');stat('p2-south-stock',fmt(res.hubOutgoingKits[1])+' 人日分');
+    if(mode.value==='all')renderStatus(res);
+    const round=$('p2-round'),truck=$('p2-truck');
+    round.innerHTML='<option value="all">すべての配送回</option>'+Array.from({length:res.maxRounds},(_,i)=>`<option value="${i+1}">第${i+1}回</option>`).join('');
+    truck.innerHTML='<option value="all">すべての車両</option>'+Array.from({length:res.trucksConfigured},(_,i)=>`<option value="${i+1}">${i+1}号車</option>`).join('');
+    round.disabled=false;truck.disabled=false;round.value='all';truck.value='all';$('p2-refresh-traffic').disabled=false;renderTables(res);renderRoundTabs(res);updateTrafficTimes(res);applySelection();
+ }
+ document.querySelectorAll('.p2-journey-toolbar button[data-journey]').forEach(btn=>btn.addEventListener('click',()=>{
+    journeyMode=btn.dataset.journey;
+    document.querySelectorAll('.p2-journey-toolbar button[data-journey]').forEach(x=>{
+       const sel=x.dataset.journey===journeyMode;x.classList.toggle('active',sel);x.setAttribute('aria-pressed',sel?'true':'false');
+    });
+    if(latest&&gm)renderMap(latest);
+ }));
+ $('p2-fit-route').addEventListener('click',fitVisibleRoads);
+ $('p2-focus-first').addEventListener('click',()=>{
+    if(!latest||!latest.routes?.length)return;
+    const first=latest.routes[0];$('p2-round').value=String(first.round);
+    $('p2-truck').value=String(first.truck);applySelection();
+ });
+ $('p2-avoid-expressway').addEventListener('change',()=>{
+    avoidExpressways=$('p2-avoid-expressway').checked;
+    if(latest){updateTrafficTimes(latest);updateRouteCards(latest);renderMap(latest);}
+ });
+ $('p2-traffic-layer').addEventListener('change',()=>{
+    if(gmTrafficLayer)gmTrafficLayer.setMap($('p2-traffic-layer').checked?gm:null);
+ });
+ $('p2-refresh-traffic').addEventListener('click',()=>{
+    if(!latest)return;
+    gmRoadCache.clear();
+    updateTrafficTimes(latest);updateRouteCards(latest);
+    if(!gm){roadAlert('Google Mapsを利用できないため交通情報を更新できません。');return;}
+    applySelection();
+ });
+ $('p2-round-tabs').addEventListener('click',event=>{
+    const btn=event.target.closest('button[data-round]');if(!btn||!latest)return;
+    $('p2-round').value=btn.dataset.round;$('p2-truck').value='all';applySelection();
+ });
+ for(const id of ['p2-round','p2-truck'])$(id).addEventListener('change',applySelection);
+ $('p2-vehicle-list').addEventListener('click',event=>{const tour=event.target.closest('.p2-tour-item');if(!tour||!latest)return;
+    const same=$('p2-round').value===tour.dataset.round&&$('p2-truck').value===tour.dataset.truck;
+    $('p2-round').value=same?'all':tour.dataset.round;
+    $('p2-truck').value=same?'all':tour.dataset.truck;
+    applySelection();
+ });
+ $('p2-start').addEventListener('click',async()=>{
+    const btn=$('p2-start');btn.disabled=true;btn.textContent='配送経路を計算中…';$('p2-info').textContent='車両と訪問順を計算しています。';
+    try{
+      const req=makeInput(),response=await fetch('/api/p2-kits',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(req)});
+      const result=await response.json();if(!response.ok)throw Error(result.error||'計算に失敗しました。');
+      render(result);try{sessionStorage.setItem('p2Result',JSON.stringify({p1CreatedAt:a.createdAt,roadMode:'all',result}))}catch(e){console.warn(e)}
+    }catch(e){$('p2-info').textContent='計算できませんでした：'+e.message;$('p2-info').className='p2-notice p2-warning';}
+    finally{btn.textContent='配送経路を再計算する';updateReady()}
+ });
+ const prev=get('p2Result');if(good&&prev?.p1CreatedAt===a.createdAt&&prev?.result&&prev.roadMode==='all'){latest=prev.result;if(mode.value==='all')render(prev.result)}
+ updateReady();
+})();
+</script>
+{% if api_key %}<script async defer src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&callback=initP2GoogleMap&libraries=routes&language=ja&region=JP&v=weekly" onerror="p2GoogleMapFailure()"></script>{% endif %}
+{% endblock %}
