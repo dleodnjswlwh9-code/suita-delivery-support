@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}データ｜吹田市救援物資配分・配送支援システム{% endblock %}
+{% block content %}
+<section class="v53-data-page">
+  <div class="v53-data-heading">
+    <h1>データ閲覧・ダウンロード</h1>
+    <p>本システムで使用する基礎資料を公開しています。Excel形式で閲覧・ダウンロードできます。</p>
+  </div>
+  <div class="v53-data-list">
+    {% for key, item in datasets.items() %}
+    <article class="v53-data-card">
+      <div class="v53-data-file-icon" aria-hidden="true">XLSX</div>
+      <div class="v53-data-information">
+        <h2>{{ item.title }}</h2>
+        <p>{{ item.description }}</p>
+        <span class="v53-data-filename">{{ item.filename }}</span>
+      </div>
+      <div class="v53-data-actions">
+        <button type="button" class="v53-data-preview-btn" data-dataset="{{ key }}" aria-controls="v53-data-preview" aria-expanded="false">閲覧</button>
+        <a class="v53-data-download-btn" href="{{ url_for('public_data_download', key=key) }}" download>ダウンロード</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+
+  <section id="v53-data-preview" class="v53-data-preview" aria-label="Excelデータのプレビュー" hidden>
+    <div class="v53-data-preview-title">
+      <h2 id="v53-preview-title">データ閲覧</h2>
+      <button type="button" id="v53-preview-close" class="v53-data-close">閉じる</button>
+    </div>
+    <div class="v53-data-controls">
+      <label for="v53-sheet-select">シート</label>
+      <select id="v53-sheet-select"></select>
+      <label for="v53-search-input">検索</label>
+      <input id="v53-search-input" type="search" placeholder="データ内の文字を検索" autocomplete="off">
+    </div>
+    <p id="v53-preview-state" class="v53-data-status" role="status"></p>
+    <div class="v53-data-table-scroll" role="region" aria-label="Excelシートの内容" tabindex="0">
+      <table id="v53-preview-table" class="v53-data-table"></table>
+    </div>
+    <div class="v53-data-pagination">
+      <button type="button" id="v53-prev">前へ</button>
+      <span id="v53-page-info"></span>
+      <button type="button" id="v53-next">次へ</button>
+    </div>
+  </section>
+  <p class="v53-data-note">公開データには、研究用の設定値や整理済みの資料が含まれます。<br>実際の災害発生時の状況・最新の道路規制を示すものではありません。</p>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='public_data.js') }}" defer></script>
+{% endblock %}
