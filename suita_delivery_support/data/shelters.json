@@ -1,0 +1,1724 @@
+[
+  {
+    "name": "吹田市立吹田第一小学校",
+    "capacity": 831,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立吹田第一小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立吹田第二小学校",
+    "capacity": 995,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立吹田第二小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立吹田第三小学校",
+    "capacity": 1033,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立吹田第三小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立吹田東小学校",
+    "capacity": 988,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立吹田東小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立吹田南小学校",
+    "capacity": 1058,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立吹田南小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立吹田第六小学校",
+    "capacity": 853,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立吹田第六小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立千里第一小学校",
+    "capacity": 1135,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立千里第一小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立千里第二小学校",
+    "capacity": 1160,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立千里第二小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立千里第三小学校",
+    "capacity": 1158,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立千里第三小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立千里新田小学校",
+    "capacity": 1262,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立千里新田小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立佐井寺小学校",
+    "capacity": 1237,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立佐井寺小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立東佐井寺小学校",
+    "capacity": 1313,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立東佐井寺小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立岸部第一小学校",
+    "capacity": 1377,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立岸部第一小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立岸部第二小学校",
+    "capacity": 1270,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立岸部第二小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立豊津第一小学校",
+    "capacity": 1288,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立豊津第一小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立豊津第二小学校",
+    "capacity": 1186,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立豊津第二小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立江坂大池小学校",
+    "capacity": 725,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立江坂大池小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立山手小学校",
+    "capacity": 1065,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立山手小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立片山小学校",
+    "capacity": 1339,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立片山小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立山田第一小学校",
+    "capacity": 888,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立山田第一小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立山田第二小学校",
+    "capacity": 905,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立山田第二小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立山田第三小学校",
+    "capacity": 1237,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立山田第三小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立東山田小学校",
+    "capacity": 1288,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立東山田小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立南山田小学校",
+    "capacity": 1544,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立南山田小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立西山田小学校",
+    "capacity": 1160,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立西山田小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立北山田小学校",
+    "capacity": 1262,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立北山田小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立千里丘北小学校",
+    "capacity": 1039,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立千里丘北小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立佐竹台小学校",
+    "capacity": 965,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立佐竹台小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立高野台小学校",
+    "capacity": 880,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立高野台小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立津雲台小学校",
+    "capacity": 1084,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立津雲台小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立古江台小学校",
+    "capacity": 1058,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立古江台小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立藤白台小学校",
+    "capacity": 1136,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立藤白台小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立青山台小学校",
+    "capacity": 1083,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立青山台小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立桃山台小学校",
+    "capacity": 1084,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立桃山台小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立千里たけみ小学校",
+    "capacity": 1109,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立千里たけみ小学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立第一中学校",
+    "capacity": 1162,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立第一中学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立第二中学校",
+    "capacity": 2246,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立第二中学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立第三中学校",
+    "capacity": 814,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立第三中学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立第五中学校",
+    "capacity": 1038,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立第五中学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立第六中学校",
+    "capacity": 1013,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立第六中学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立片山中学校",
+    "capacity": 1224,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立片山中学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立佐井寺中学校",
+    "capacity": 1174,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立佐井寺中学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立南千里中学校",
+    "capacity": 968,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立南千里中学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立豊津中学校",
+    "capacity": 1124,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立豊津中学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立豊津西中学校",
+    "capacity": 1121,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立豊津西中学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立山田中学校",
+    "capacity": 1049,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立山田中学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立西山田中学校",
+    "capacity": 1224,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立西山田中学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立山田東中学校",
+    "capacity": 996,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立山田東中学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立千里丘中学校",
+    "capacity": 1172,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立千里丘中学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立高野台中学校",
+    "capacity": 893,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立高野台中学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立青山台中学校",
+    "capacity": 1056,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立青山台中学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立竹見台中学校",
+    "capacity": 859,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立竹見台中学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立古江台中学校",
+    "capacity": 1091,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立古江台中学校 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立 吹田第三幼稚園",
+    "capacity": 122,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立 吹田第三幼稚園 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立 東佐井寺幼稚園",
+    "capacity": 177,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立 東佐井寺幼稚園 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立 片山幼稚園",
+    "capacity": 154,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立 片山幼稚園 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立 東山田幼稚園",
+    "capacity": 181,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立 東山田幼稚園 大阪府吹田市 日本"
+  },
+  {
+    "name": "大阪府立 吹田高校体育館",
+    "capacity": 729,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 0,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "大阪府立 吹田高校体育館 大阪府吹田市 日本"
+  },
+  {
+    "name": "大阪府立 千里高校体育館",
+    "capacity": 806,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 0,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "大阪府立 千里高校体育館 大阪府吹田市 日本"
+  },
+  {
+    "name": "大阪府立 北千里高校体育館",
+    "capacity": 1061,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 0,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "大阪府立 北千里高校体育館 大阪府吹田市 日本"
+  },
+  {
+    "name": "大阪府立 山田高校体育館",
+    "capacity": 1061,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 0,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "大阪府立 山田高校体育館 大阪府吹田市 日本"
+  },
+  {
+    "name": "大阪府立 吹田東高校体育館",
+    "capacity": 1021,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 0,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "大阪府立 吹田東高校体育館 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹一地区公民館",
+    "capacity": 31,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "吹一地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "山二地区公民館",
+    "capacity": 65,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "山二地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹三地区公民館",
+    "capacity": 67,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "吹三地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "岸一地区公民館",
+    "capacity": 35,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "岸一地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "千一地区公民館",
+    "capacity": 71,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "千一地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "山一地区公民館",
+    "capacity": 73,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "山一地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "山手地区公民館",
+    "capacity": 70,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "山手地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田南地区公民館",
+    "capacity": 48,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "吹田南地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹二地区公民館",
+    "capacity": 66,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "吹二地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "豊一地区公民館",
+    "capacity": 78,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "豊一地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "千二地区公民館",
+    "capacity": 71,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "千二地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田東地区公民館",
+    "capacity": 52,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "吹田東地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "山三地区公民館",
+    "capacity": 61,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "山三地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "南千里地区公民館",
+    "capacity": 83,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "南千里地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "千三地区公民館",
+    "capacity": 62,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "千三地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "岸二地区公民館",
+    "capacity": 61,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "岸二地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "南山田地区公民館",
+    "capacity": 59,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "南山田地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "北千里地区公民館",
+    "capacity": 162,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "北千里地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "豊二地区公民館",
+    "capacity": 59,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "豊二地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹六地区公民館",
+    "capacity": 57,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "吹六地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "西山田地区公民館",
+    "capacity": 64,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "西山田地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "東山田地区公民館",
+    "capacity": 66,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "東山田地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "片山地区公民館",
+    "capacity": 59,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "片山地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "江坂大池地区公民館",
+    "capacity": 61,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "江坂大池地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "東佐井寺地区公民館",
+    "capacity": 60,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "東佐井寺地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "北山田地区公民館",
+    "capacity": 61,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "北山田地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "佐井寺地区公民館",
+    "capacity": 62,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "佐井寺地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "千里新田地区公民館",
+    "capacity": 61,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "千里新田地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "山五地区公民館",
+    "capacity": 62,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "山五地区公民館 大阪府吹田市 日本"
+  },
+  {
+    "name": "片山市民体育館",
+    "capacity": 1261,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 12,
+      "blanket": 50
+    },
+    "type": "shelter",
+    "searchQuery": "片山市民体育館 大阪府吹田市 日本"
+  },
+  {
+    "name": "北千里市民体育館",
+    "capacity": 910,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 50
+    },
+    "type": "shelter",
+    "searchQuery": "北千里市民体育館 大阪府吹田市 日本"
+  },
+  {
+    "name": "目俵市民体育館",
+    "capacity": 1285,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 12,
+      "blanket": 50
+    },
+    "type": "shelter",
+    "searchQuery": "目俵市民体育館 大阪府吹田市 日本"
+  },
+  {
+    "name": "武道館（洗心館）",
+    "capacity": 1120,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 12,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "武道館（洗心館） 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立総合運動場",
+    "capacity": 170,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立総合運動場 大阪府吹田市 日本"
+  },
+  {
+    "name": "青少年クリエイティブセンター",
+    "capacity": 1001,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 0,
+      "water500ml": 24,
+      "diaper": 0,
+      "toilet": 1200,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "青少年クリエイティブセンター 大阪府吹田市 日本"
+  },
+  {
+    "name": "自然体験交流センター",
+    "capacity": 318,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 0,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "自然体験交流センター 大阪府吹田市 日本"
+  },
+  {
+    "name": "夢つながり未来館",
+    "capacity": 304,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 0,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "夢つながり未来館 大阪府吹田市 日本"
+  },
+  {
+    "name": "交流活動館",
+    "capacity": 175,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 0,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "交流活動館 大阪府吹田市 日本"
+  },
+  {
+    "name": "文化会館(ﾒｲｼｱﾀｰ)",
+    "capacity": 385,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "文化会館(ﾒｲｼｱﾀｰ) 大阪府吹田市 日本"
+  },
+  {
+    "name": "吹田市立男女共同参画センター(ﾃﾞｭｵ)",
+    "capacity": 244,
+    "stock": {
+      "retortRice": 36,
+      "riceCookie": 0,
+      "water500ml": 54,
+      "diaper": 0,
+      "toilet": 200,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "吹田市立男女共同参画センター(ﾃﾞｭｵ) 大阪府吹田市 日本"
+  },
+  {
+    "name": "千里市民センター",
+    "capacity": 130,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "千里市民センター 大阪府吹田市 日本"
+  },
+  {
+    "name": "岸部市民センター",
+    "capacity": 158,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "岸部市民センター 大阪府吹田市 日本"
+  },
+  {
+    "name": "豊一市民センター",
+    "capacity": 125,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "豊一市民センター 大阪府吹田市 日本"
+  },
+  {
+    "name": "千里丘市民センター",
+    "capacity": 226,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "千里丘市民センター 大阪府吹田市 日本"
+  },
+  {
+    "name": "津雲台市民ホール",
+    "capacity": 84,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "津雲台市民ホール 大阪府吹田市 日本"
+  },
+  {
+    "name": "高野台市民ホール",
+    "capacity": 83,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "高野台市民ホール 大阪府吹田市 日本"
+  },
+  {
+    "name": "佐竹台市民ホール",
+    "capacity": 92,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "佐竹台市民ホール 大阪府吹田市 日本"
+  },
+  {
+    "name": "桃山台市民ホール",
+    "capacity": 121,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "桃山台市民ホール 大阪府吹田市 日本"
+  },
+  {
+    "name": "青山台市民ホール",
+    "capacity": 50,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "青山台市民ホール 大阪府吹田市 日本"
+  },
+  {
+    "name": "藤白台市民ホール",
+    "capacity": 84,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "藤白台市民ホール 大阪府吹田市 日本"
+  },
+  {
+    "name": "古江台市民ホール",
+    "capacity": 55,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "古江台市民ホール 大阪府吹田市 日本"
+  },
+  {
+    "name": "竹見台市民ホール",
+    "capacity": 52,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "竹見台市民ホール 大阪府吹田市 日本"
+  },
+  {
+    "name": "岸二地区集会所",
+    "capacity": 75,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "岸二地区集会所 大阪府吹田市 日本"
+  },
+  {
+    "name": "北山田地区集会所",
+    "capacity": 128,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "北山田地区集会所 大阪府吹田市 日本"
+  },
+  {
+    "name": "内本町コミュニティーセンター",
+    "capacity": 171,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "内本町コミュニティーセンター 大阪府吹田市 日本"
+  },
+  {
+    "name": "亥の子谷コミュニティセンター",
+    "capacity": 165,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "亥の子谷コミュニティセンター 大阪府吹田市 日本"
+  },
+  {
+    "name": "千里山コミュニティセンター",
+    "capacity": 146,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "千里山コミュニティセンター 大阪府吹田市 日本"
+  },
+  {
+    "name": "山田ふれあい文化センター",
+    "capacity": 154,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "searchQuery": "山田ふれあい文化センター 大阪府吹田市 日本"
+  },
+  {
+    "name": "勤労者会館",
+    "capacity": 211,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 80,
+      "diaper": 0,
+      "toilet": 2,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "勤労者会館 大阪府吹田市 日本"
+  },
+  {
+    "name": "シルバーワークプラザ",
+    "capacity": 85,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 0,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "シルバーワークプラザ 大阪府吹田市 日本"
+  },
+  {
+    "name": "資源ﾘｻｲｸﾙｾﾝﾀｰ(くるくるﾌﾟﾗｻﾞ)",
+    "capacity": 342,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "searchQuery": "資源ﾘｻｲｸﾙｾﾝﾀｰ(くるくるﾌﾟﾗｻﾞ) 大阪府吹田市 日本"
+  }
+]
