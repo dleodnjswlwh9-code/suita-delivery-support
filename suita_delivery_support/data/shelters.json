@@ -1,0 +1,1847 @@
+[
+  {
+    "name": "吹田市立吹田第一小学校",
+    "capacity": 831,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7600266448987,
+    "lng": 135.523010832503
+  },
+  {
+    "name": "吹田市立吹田第二小学校",
+    "capacity": 995,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7585692041389,
+    "lng": 135.510775295387
+  },
+  {
+    "name": "吹田市立吹田第三小学校",
+    "capacity": 1033,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7626482901675,
+    "lng": 135.530785748051
+  },
+  {
+    "name": "吹田市立吹田東小学校",
+    "capacity": 988,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7670564787645,
+    "lng": 135.536164293257
+  },
+  {
+    "name": "吹田市立吹田南小学校",
+    "capacity": 1058,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.752485686914,
+    "lng": 135.503710382597
+  },
+  {
+    "name": "吹田市立吹田第六小学校",
+    "capacity": 853,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7533917942774,
+    "lng": 135.514623424467
+  },
+  {
+    "name": "吹田市立千里第一小学校",
+    "capacity": 1135,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7699044853098,
+    "lng": 135.52660200304
+  },
+  {
+    "name": "吹田市立千里第二小学校",
+    "capacity": 1160,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7786640790022,
+    "lng": 135.508772161473
+  },
+  {
+    "name": "吹田市立千里第三小学校",
+    "capacity": 1158,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7731703469959,
+    "lng": 135.499802689372
+  },
+  {
+    "name": "吹田市立千里新田小学校",
+    "capacity": 1262,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7845810103118,
+    "lng": 135.500439536904
+  },
+  {
+    "name": "吹田市立佐井寺小学校",
+    "capacity": 1237,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7862160007643,
+    "lng": 135.516360079237
+  },
+  {
+    "name": "吹田市立東佐井寺小学校",
+    "capacity": 1313,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7868257113057,
+    "lng": 135.52263846533
+  },
+  {
+    "name": "吹田市立岸部第一小学校",
+    "capacity": 1377,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7775330131038,
+    "lng": 135.536088374764
+  },
+  {
+    "name": "吹田市立岸部第二小学校",
+    "capacity": 1270,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7824476712032,
+    "lng": 135.528988991972
+  },
+  {
+    "name": "吹田市立豊津第一小学校",
+    "capacity": 1288,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7615644823148,
+    "lng": 135.499766072205
+  },
+  {
+    "name": "吹田市立豊津第二小学校",
+    "capacity": 1186,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.762526051109,
+    "lng": 135.494998154908
+  },
+  {
+    "name": "吹田市立江坂大池小学校",
+    "capacity": 725,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7659326580399,
+    "lng": 135.495587528505
+  },
+  {
+    "name": "吹田市立山手小学校",
+    "capacity": 1065,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7671453300808,
+    "lng": 135.511263180104
+  },
+  {
+    "name": "吹田市立片山小学校",
+    "capacity": 1339,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7702939113552,
+    "lng": 135.518773319695
+  },
+  {
+    "name": "吹田市立山田第一小学校",
+    "capacity": 888,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7998959318608,
+    "lng": 135.528624232867
+  },
+  {
+    "name": "吹田市立山田第二小学校",
+    "capacity": 905,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.794187319367,
+    "lng": 135.550386717665
+  },
+  {
+    "name": "吹田市立山田第三小学校",
+    "capacity": 1237,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7933032662908,
+    "lng": 135.53134938168
+  },
+  {
+    "name": "吹田市立東山田小学校",
+    "capacity": 1288,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.8053335040051,
+    "lng": 135.549091965828
+  },
+  {
+    "name": "吹田市立南山田小学校",
+    "capacity": 1544,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7941339502075,
+    "lng": 135.5432078605
+  },
+  {
+    "name": "吹田市立西山田小学校",
+    "capacity": 1160,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7954779967665,
+    "lng": 135.524756454421
+  },
+  {
+    "name": "吹田市立北山田小学校",
+    "capacity": 1262,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.8080144896133,
+    "lng": 135.520952964571
+  },
+  {
+    "name": "吹田市立千里丘北小学校",
+    "capacity": 1039,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7998939402251,
+    "lng": 135.544892940547
+  },
+  {
+    "name": "吹田市立佐竹台小学校",
+    "capacity": 965,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7877456632314,
+    "lng": 135.515202985249
+  },
+  {
+    "name": "吹田市立高野台小学校",
+    "capacity": 880,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7953412983531,
+    "lng": 135.515477835014
+  },
+  {
+    "name": "吹田市立津雲台小学校",
+    "capacity": 1084,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.8029374311427,
+    "lng": 135.510159031286
+  },
+  {
+    "name": "吹田市立古江台小学校",
+    "capacity": 1058,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.8156860427767,
+    "lng": 135.509406725217
+  },
+  {
+    "name": "吹田市立藤白台小学校",
+    "capacity": 1136,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.8193961642425,
+    "lng": 135.515383699657
+  },
+  {
+    "name": "吹田市立青山台小学校",
+    "capacity": 1083,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.8222624191119,
+    "lng": 135.503980500134
+  },
+  {
+    "name": "吹田市立桃山台小学校",
+    "capacity": 1084,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7920947000652,
+    "lng": 135.502755887338
+  },
+  {
+    "name": "吹田市立千里たけみ小学校",
+    "capacity": 1109,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 13,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7960656262112,
+    "lng": 135.502118316868
+  },
+  {
+    "name": "吹田市立第一中学校",
+    "capacity": 1162,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7726718778279,
+    "lng": 135.502193799535
+  },
+  {
+    "name": "吹田市立第二中学校",
+    "capacity": 2246,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7803930828833,
+    "lng": 135.526806591193
+  },
+  {
+    "name": "吹田市立第三中学校",
+    "capacity": 814,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.751615443222,
+    "lng": 135.522728746261
+  },
+  {
+    "name": "吹田市立第五中学校",
+    "capacity": 1038,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7687044264114,
+    "lng": 135.536032733042
+  },
+  {
+    "name": "吹田市立第六中学校",
+    "capacity": 1013,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.756076000305,
+    "lng": 135.509998875043
+  },
+  {
+    "name": "吹田市立片山中学校",
+    "capacity": 1224,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7783739958367,
+    "lng": 135.520388697699
+  },
+  {
+    "name": "吹田市立佐井寺中学校",
+    "capacity": 1174,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7841368576322,
+    "lng": 135.526544980953
+  },
+  {
+    "name": "吹田市立南千里中学校",
+    "capacity": 968,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7876471804076,
+    "lng": 135.500041705103
+  },
+  {
+    "name": "吹田市立豊津中学校",
+    "capacity": 1124,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.758420368225,
+    "lng": 135.504430325264
+  },
+  {
+    "name": "吹田市立豊津西中学校",
+    "capacity": 1121,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7605562628868,
+    "lng": 135.494093510131
+  },
+  {
+    "name": "吹田市立山田中学校",
+    "capacity": 1049,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7923741167222,
+    "lng": 135.538696286657
+  },
+  {
+    "name": "吹田市立西山田中学校",
+    "capacity": 1224,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7966729858286,
+    "lng": 135.523284980094
+  },
+  {
+    "name": "吹田市立山田東中学校",
+    "capacity": 996,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.8028473137775,
+    "lng": 135.52814412925
+  },
+  {
+    "name": "吹田市立千里丘中学校",
+    "capacity": 1172,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.8037151759916,
+    "lng": 135.548146987781
+  },
+  {
+    "name": "吹田市立高野台中学校",
+    "capacity": 893,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7919885679273,
+    "lng": 135.518844919398
+  },
+  {
+    "name": "吹田市立青山台中学校",
+    "capacity": 1056,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.8222372007805,
+    "lng": 135.508098980203
+  },
+  {
+    "name": "吹田市立竹見台中学校",
+    "capacity": 859,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.7964093350043,
+    "lng": 135.50422059971999
+  },
+  {
+    "name": "吹田市立古江台中学校",
+    "capacity": 1091,
+    "stock": {
+      "retortRice": 100,
+      "riceCookie": 96,
+      "water500ml": 120,
+      "diaper": 147,
+      "toilet": 2,
+      "blanket": 100
+    },
+    "type": "shelter",
+    "lat": 34.8080840786273,
+    "lng": 135.506098785499
+  },
+  {
+    "name": "吹田市立 吹田第三幼稚園",
+    "capacity": 122,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.7624253088445,
+    "lng": 135.531103428799
+  },
+  {
+    "name": "吹田市立 東佐井寺幼稚園",
+    "capacity": 177,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.7861872149936,
+    "lng": 135.523087664255
+  },
+  {
+    "name": "吹田市立 片山幼稚園",
+    "capacity": 154,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.7701314740968,
+    "lng": 135.519339320361
+  },
+  {
+    "name": "吹田市立 東山田幼稚園",
+    "capacity": 181,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.8048606524684,
+    "lng": 135.548753206568
+  },
+  {
+    "name": "大阪府立 吹田高校体育館",
+    "capacity": 729,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 0,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.77797,
+    "lng": 135.5283
+  },
+  {
+    "name": "大阪府立 千里高校体育館",
+    "capacity": 806,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 0,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.7991275341106,
+    "lng": 135.514724073492
+  },
+  {
+    "name": "大阪府立 北千里高校体育館",
+    "capacity": 1061,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 0,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.8275592532061,
+    "lng": 135.507133089078
+  },
+  {
+    "name": "大阪府立 山田高校体育館",
+    "capacity": 1061,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 0,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.802327139074,
+    "lng": 135.528571903657
+  },
+  {
+    "name": "大阪府立 吹田東高校体育館",
+    "capacity": 1021,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 0,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.80328419801,
+    "lng": 135.547087095087
+  },
+  {
+    "name": "吹一地区公民館",
+    "capacity": 31,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7550391312293,
+    "lng": 135.524220363042
+  },
+  {
+    "name": "山二地区公民館",
+    "capacity": 65,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7950315305259,
+    "lng": 135.548632190559
+  },
+  {
+    "name": "吹三地区公民館",
+    "capacity": 67,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7618188189849,
+    "lng": 135.53102591519
+  },
+  {
+    "name": "岸一地区公民館",
+    "capacity": 35,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.779426702778,
+    "lng": 135.53578363056
+  },
+  {
+    "name": "千一地区公民館",
+    "capacity": 71,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.77322874885,
+    "lng": 135.52492988122
+  },
+  {
+    "name": "山一地区公民館",
+    "capacity": 73,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7992617608505,
+    "lng": 135.52886513284
+  },
+  {
+    "name": "山手地区公民館",
+    "capacity": 70,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7655800938891,
+    "lng": 135.512445707769
+  },
+  {
+    "name": "吹田南地区公民館",
+    "capacity": 48,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7488455969048,
+    "lng": 135.505898668632
+  },
+  {
+    "name": "吹二地区公民館",
+    "capacity": 66,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7586566346806,
+    "lng": 135.510260645574
+  },
+  {
+    "name": "豊一地区公民館",
+    "capacity": 78,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.761966684617,
+    "lng": 135.505045352189
+  },
+  {
+    "name": "千二地区公民館",
+    "capacity": 71,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7770248681634,
+    "lng": 135.50709103688
+  },
+  {
+    "name": "吹田東地区公民館",
+    "capacity": 52,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7664527706151,
+    "lng": 135.535875782488
+  },
+  {
+    "name": "山三地区公民館",
+    "capacity": 61,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7910508428166,
+    "lng": 135.529284195243
+  },
+  {
+    "name": "南千里地区公民館",
+    "capacity": 83,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7931185416724,
+    "lng": 135.508331608839
+  },
+  {
+    "name": "千三地区公民館",
+    "capacity": 62,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7721679907416,
+    "lng": 135.504325586829
+  },
+  {
+    "name": "岸二地区公民館",
+    "capacity": 61,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7821622646955,
+    "lng": 135.529930322143
+  },
+  {
+    "name": "南山田地区公民館",
+    "capacity": 59,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7930223583147,
+    "lng": 135.539788959127
+  },
+  {
+    "name": "北千里地区公民館",
+    "capacity": 162,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.819664638788,
+    "lng": 135.508664014953
+  },
+  {
+    "name": "豊二地区公民館",
+    "capacity": 59,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7585515256879,
+    "lng": 135.48959702804
+  },
+  {
+    "name": "吹六地区公民館",
+    "capacity": 57,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7533199891837,
+    "lng": 135.515612964184
+  },
+  {
+    "name": "西山田地区公民館",
+    "capacity": 64,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7948033769442,
+    "lng": 135.528855980764
+  },
+  {
+    "name": "東山田地区公民館",
+    "capacity": 66,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.8035136841284,
+    "lng": 135.549935294412
+  },
+  {
+    "name": "片山地区公民館",
+    "capacity": 59,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7690490593253,
+    "lng": 135.519156329734
+  },
+  {
+    "name": "江坂大池地区公民館",
+    "capacity": 61,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7677063238314,
+    "lng": 135.492255857996
+  },
+  {
+    "name": "東佐井寺地区公民館",
+    "capacity": 60,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7860514862786,
+    "lng": 135.5229172012
+  },
+  {
+    "name": "北山田地区公民館",
+    "capacity": 61,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.8050590949643,
+    "lng": 135.524087434354
+  },
+  {
+    "name": "佐井寺地区公民館",
+    "capacity": 62,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.781800878057,
+    "lng": 135.51842292545
+  },
+  {
+    "name": "千里新田地区公民館",
+    "capacity": 61,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7843533775486,
+    "lng": 135.504351589432
+  },
+  {
+    "name": "山五地区公民館",
+    "capacity": 62,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7880786741849,
+    "lng": 135.535959949528
+  },
+  {
+    "name": "片山市民体育館",
+    "capacity": 1261,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 12,
+      "blanket": 50
+    },
+    "type": "shelter",
+    "lat": 34.7651549440675,
+    "lng": 135.515100362899
+  },
+  {
+    "name": "北千里市民体育館",
+    "capacity": 910,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 50
+    },
+    "type": "shelter",
+    "lat": 34.827560896219,
+    "lng": 135.507130146687
+  },
+  {
+    "name": "目俵市民体育館",
+    "capacity": 1285,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 12,
+      "blanket": 50
+    },
+    "type": "shelter",
+    "lat": 34.7662695120136,
+    "lng": 135.531470760424
+  },
+  {
+    "name": "武道館（洗心館）",
+    "capacity": 1120,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 12,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.8092369838425,
+    "lng": 135.520393660106
+  },
+  {
+    "name": "吹田市立総合運動場",
+    "capacity": 170,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.77987,
+    "lng": 135.5225
+  },
+  {
+    "name": "青少年クリエイティブセンター",
+    "capacity": 1001,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 0,
+      "water500ml": 24,
+      "diaper": 0,
+      "toilet": 1200,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.7748511076599,
+    "lng": 135.532053914628
+  },
+  {
+    "name": "自然体験交流センター",
+    "capacity": 318,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 0,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.8272765367443,
+    "lng": 135.509748635592
+  },
+  {
+    "name": "夢つながり未来館",
+    "capacity": 304,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 0,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.8045923413924,
+    "lng": 135.516071567631
+  },
+  {
+    "name": "交流活動館",
+    "capacity": 175,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 0,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.7745009662254,
+    "lng": 135.533066421797
+  },
+  {
+    "name": "文化会館(ﾒｲｼｱﾀｰ)",
+    "capacity": 385,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.7597226783537,
+    "lng": 135.515275111376
+  },
+  {
+    "name": "吹田市立男女共同参画センター(ﾃﾞｭｵ)",
+    "capacity": 244,
+    "stock": {
+      "retortRice": 36,
+      "riceCookie": 0,
+      "water500ml": 54,
+      "diaper": 0,
+      "toilet": 200,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.7642381172372,
+    "lng": 135.518519293469
+  },
+  {
+    "name": "千里市民センター",
+    "capacity": 130,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7930484143795,
+    "lng": 135.508332230907
+  },
+  {
+    "name": "岸部市民センター",
+    "capacity": 158,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7758233840822,
+    "lng": 135.544883663467
+  },
+  {
+    "name": "豊一市民センター",
+    "capacity": 125,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7649384436912,
+    "lng": 135.499595510618
+  },
+  {
+    "name": "千里丘市民センター",
+    "capacity": 226,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.795339612903,
+    "lng": 135.551255117008
+  },
+  {
+    "name": "津雲台市民ホール",
+    "capacity": 84,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.8007991596395,
+    "lng": 135.507879876926
+  },
+  {
+    "name": "高野台市民ホール",
+    "capacity": 83,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7952486308034,
+    "lng": 135.516677596044
+  },
+  {
+    "name": "佐竹台市民ホール",
+    "capacity": 92,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7913151219235,
+    "lng": 135.514750115459
+  },
+  {
+    "name": "桃山台市民ホール",
+    "capacity": 121,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7931738468089,
+    "lng": 135.501382204872
+  },
+  {
+    "name": "青山台市民ホール",
+    "capacity": 50,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.8217920894067,
+    "lng": 135.505416024524
+  },
+  {
+    "name": "藤白台市民ホール",
+    "capacity": 84,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.8164667969725,
+    "lng": 135.516898682691
+  },
+  {
+    "name": "古江台市民ホール",
+    "capacity": 55,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.8165757446206,
+    "lng": 135.508896617477
+  },
+  {
+    "name": "竹見台市民ホール",
+    "capacity": 52,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7951243986895,
+    "lng": 135.500652578208
+  },
+  {
+    "name": "岸二地区集会所",
+    "capacity": 75,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.7824483922478,
+    "lng": 135.528988845069
+  },
+  {
+    "name": "北山田地区集会所",
+    "capacity": 128,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.8086258807436,
+    "lng": 135.520168006611
+  },
+  {
+    "name": "内本町コミュニティーセンター",
+    "capacity": 171,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7584085590517,
+    "lng": 135.525762025212
+  },
+  {
+    "name": "亥の子谷コミュニティセンター",
+    "capacity": 165,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7897789189889,
+    "lng": 135.529079683745
+  },
+  {
+    "name": "千里山コミュニティセンター",
+    "capacity": 146,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7790328050364,
+    "lng": 135.50609151207
+  },
+  {
+    "name": "山田ふれあい文化センター",
+    "capacity": 154,
+    "stock": {
+      "retortRice": 50,
+      "riceCookie": 48,
+      "water500ml": 48,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 30
+    },
+    "type": "shelter",
+    "lat": 34.7973434351032,
+    "lng": 135.532929473129
+  },
+  {
+    "name": "勤労者会館",
+    "capacity": 211,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 80,
+      "diaper": 0,
+      "toilet": 2,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.7624271719794,
+    "lng": 135.527323991702
+  },
+  {
+    "name": "シルバーワークプラザ",
+    "capacity": 85,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 0,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.77975,
+    "lng": 135.5088
+  },
+  {
+    "name": "資源ﾘｻｲｸﾙｾﾝﾀｰ(くるくるﾌﾟﾗｻﾞ)",
+    "capacity": 342,
+    "stock": {
+      "retortRice": 0,
+      "riceCookie": 0,
+      "water500ml": 0,
+      "diaper": 0,
+      "toilet": 1,
+      "blanket": 0
+    },
+    "type": "shelter",
+    "lat": 34.8086021928782,
+    "lng": 135.540086192188
+  }
+]
