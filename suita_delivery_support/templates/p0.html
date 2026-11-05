@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}P0 実装可能性確認｜吹田市救援物資配分配送支援システム{% endblock %}
+{% block content %}
+<section class="p69-page">
+ <header class="p69-head"><h1>P0 実装可能性確認</h1><div class="p69-flow"><span>P1 配分</span><b>→</b><strong>P0 確認</strong><b>→</b><span>P2 配送</span></div></header>
+ <section class="p69-card" aria-labelledby="p69-basic-title">
+   <div class="p69-heading"><b class="p69-index">01</b><h2 id="p69-basic-title">物資・車両条件</h2></div>
+   <div class="p69-grid">
+     <label class="p69-field"><strong>最小配送量</strong><input id="v65-min-kg" type="number" min="0.1" max="3996" step="0.1" value="10"><small>1か所への最低配送量（kg）</small><small id="v65-conversion" class="p69-note-em">計算上：13.5kg（3キット）</small></label>
+     <label class="p69-field"><strong>最大配送回数</strong><input id="v65-trips" type="number" min="1" max="50" value="3"><small>利用する配送回の上限</small></label>
+     <label class="p69-field"><strong>2tトラック</strong><input id="v65-trucks" type="number" min="0" max="50" value="10"><small>1台の積載上限：2,000kg</small></label>
+     <label class="p69-field"><strong>4tトラック</strong><input id="v67-trucks-4t" type="number" min="0" max="50" value="0"><small>1台の積載上限：4,000kg</small></label>
+     <label class="p69-field"><strong>北部拠点 2t配備</strong><input id="p69-n2" type="number" min="0" max="50" value="5"><small>北部を出発する2t車両数</small></label>
+     <label class="p69-field"><strong>北部拠点 4t配備</strong><input id="p69-n4" type="number" min="0" max="50" value="0"><small>残りの車両は南部に配備</small></label>
+     <label class="p69-field"><strong>北部拠点 在庫</strong><input id="p69-stock-n" type="number" min="0" step="1" value="0"><small>北部から出庫可能な量（キット）</small></label>
+     <label class="p69-field"><strong>南部拠点 在庫</strong><input id="p69-stock-s" type="number" min="0" step="1" value="0"><small>南部から出庫可能な量（キット）</small></label>
+   </div>
+   <p class="p69-inline-note">拠点在庫はシミュレーション設定値。実在庫の確認が必要</p>
+   <div class="p69-fixed"><span>必須訪問</span><strong>適用</strong><span>未訪問の対象避難所を最低1回訪問</span></div>
+ </section>
+ <section class="p69-card" aria-labelledby="p69-time-title">
+   <div class="p69-heading"><b class="p69-index">02</b><h2 id="p69-time-title">時間・積込条件</h2></div>
+   <div class="p69-grid">
+     <label class="p69-field"><strong>1回の配送時間上限</strong><input id="p69-round-min" type="number" min="1" max="100000" value="360"><small>出発から全車両の帰着まで（分）</small></label>
+     <label class="p69-field"><strong>累積作業時間上限</strong><input id="p69-total-min" type="number" min="1" max="100000" value="1080"><small>全配送回の所要時間合計（分）</small></label>
+     <label class="p69-field"><strong>北部 同時積込台数</strong><input id="p69-load-n" type="number" min="1" max="50" value="5"><small>同時に積み込める車両数</small></label>
+     <label class="p69-field"><strong>南部 同時積込台数</strong><input id="p69-load-s" type="number" min="1" max="50" value="5"><small>超過分は追加の積込順番</small></label>
+     <label class="p69-field"><strong>計算時間上限</strong><input id="v65-time" type="number" min="5" max="60" value="60"><small>MILP探索の時間制限（秒）</small></label>
+     <label class="p69-field"><strong>最適性許容ギャップ</strong><input id="v65-gap" type="number" min="0.1" max="10" step="0.1" value="0.2"><small>探索終了の許容差（%）</small></label>
+   </div>
+   <div class="p69-windows">
+      <div class="p69-window-bar"><div><h3>避難所別の訪問時間帯</h3><p>計画開始からの経過時間（分）。未変更は0～1440分</p></div><input id="p69-window-search" aria-label="避難所検索" placeholder="避難所名で検索" type="search"></div>
+      <div id="p69-window-list" class="p69-window-scroll"><p class="p69-inline-note">P1の避難所データから表示</p></div>
+   </div>
+ </section>
+ <section class="p69-card p69-execute">
+   <button id="v65-run" type="button">P0を計算する</button><a href="{{ url_for('allocation') }}">P1 配分計画へ</a>
+   <p id="v65-p0-status" role="status" aria-live="polite"></p>
+ </section>
+ <section class="p69-card" id="p69-results" aria-labelledby="p69-results-title">
+   <div class="p69-heading"><b class="p69-index">03</b><h2 id="p69-results-title">計算結果</h2><span id="v65-result-badge" class="p69-badge">未計算</span></div>
+   <div class="p69-results-grid">
+      <div class="p69-result p69-result-p1"><h3>F1* <span>P1の理想評価</span></h3><strong id="v65-f1">—</strong><small>配送条件を除く理想値</small></div>
+      <div class="p69-result p69-result-eta"><h3>η <span>配送条件による差</span></h3><strong id="v65-eta">—</strong><small id="v65-eta-kind">小さいほど理想に近い評価</small></div>
+      <div class="p69-result p69-result-f1"><h3>F1 <span>実行可能な配分評価</span></h3><strong id="v65-feasible-f1">—</strong><small>P0の制約を満たす評価値</small></div>
+   </div>
+   <div class="p69-quick"><span>必須訪問 <b id="v65-mandatory">—</b></span><span>使用可能在庫 <b id="v65-stock">—</b></span><span>下界 <b id="v65-eta-lower">—</b></span><span>実際の最低配送量 <b id="v65-effective-min">—</b></span><span>訪問可能枠 <b id="v65-slots">—</b></span><span>車両・回 <b id="v65-used">—</b></span></div>
+   <p id="v65-result-note" class="p69-result-note"></p>
+   <div class="p69-go"><span>計算条件をP2へ引継ぎ</span><a id="v65-p2-link" href="{{ url_for('plan') }}" aria-disabled="true">配送計画へ</a></div>
+ </section>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='p1_sync.js') }}"></script><script>window.P0_ALLOCATION_VERSION={{ allocation_schema_version | tojson }};</script><script src="{{ url_for('static', filename='p0_dashboard_v69.js') }}"></script>{% endblock %}
