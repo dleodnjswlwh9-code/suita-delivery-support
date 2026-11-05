@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block title %}P0 実装可能性確認｜吹田市救援物資配分配送支援システム{% endblock %}
+{% block content %}
+<section class="v65-p0-page v66-p0-page">
+  <header class="v65-p0-heading">
+    <div><h1>P0 実装可能性確認</h1><p>P1の配分が、車両と物資の条件で実行できるか確認します。</p></div>
+    <div class="v65-p0-workflow" aria-label="計算の順番"><span>P1 配分</span><b>→</b><strong>P0 確認</strong><b>→</b><span>P2 配送</span></div>
+  </header>
+
+  <section class="v65-p0-card v65-p0-input-card" aria-labelledby="v65-input-heading">
+    <div class="v65-p0-section-head"><h2 id="v65-input-heading">P0の設定</h2></div>
+    <div class="v65-p0-field-grid">
+      <label><span>最小配送量 <span class="v66-help" tabindex="0" aria-label="最小配送量の説明">?<span>1か所へ届ける最小量です。</span></span></span>
+        <div class="v65-p0-field"><input id="v65-min-kg" type="number" min="0.1" max="1998" step="0.1" value="10"><span>kg</span></div>
+        <small id="v65-conversion" class="v65-p0-conversion" role="status">実際の最小量：13.5kg（3キット）</small>
+      </label>
+      <label><span>最大配送回数 <span class="v66-help" tabindex="0" aria-label="最大配送回数の説明">?<span>同じ車両を何回まで使うかの上限です。</span></span></span>
+        <div class="v65-p0-field"><input id="v65-trips" type="number" min="1" max="50" step="1" value="3"><span>回</span></div>
+      </label>
+      <label><span>2tトラック台数 <span class="v66-help" tabindex="0" aria-label="車両台数の説明">?<span>1回に使えるトラックの台数です。</span></span></span>
+        <div class="v65-p0-field"><input id="v65-trucks" type="number" min="1" max="50" step="1" value="10"><span>台</span></div>
+      </label>
+    </div>
+    <div class="v66-p0-fixed"><span>必須訪問</span><strong>適用中</strong><span>未訪問の対象避難所を最低1回訪問</span></div>
+    <details class="v66-p0-settings-extra"><summary>詳細設定 <span>計算時間・許容誤差</span></summary>
+      <div class="v65-p0-field-grid v66-p0-extra-grid">
+        <label><span>計算時間の上限</span><div class="v65-p0-field"><input id="v65-time" type="number" min="5" max="60" step="1" value="60"><span>秒</span></div></label>
+        <label><span>最適性の許容誤差 <span class="v66-help" tabindex="0" aria-label="最適性許容誤差の説明">?<span>最適解にどこまで近づいたら計算を終了するかの基準です。</span></span></span>
+          <div class="v65-p0-field"><input id="v65-gap" type="number" min="0.1" max="10" step="0.1" value="0.2"><span>%</span></div></label>
+      </div>
+    </details>
+    <div class="v65-p0-actions">
+      <button type="button" id="v65-run" class="v65-p0-button-main">P0を計算する</button>
+      <a href="{{ url_for('allocation') }}">配分計画（P1）へ</a>
+    </div>
+    <div id="v65-p0-status" class="v65-p0-message" role="status" aria-live="polite"></div>
+  </section>
+
+  <section class="v65-p0-card" aria-labelledby="v65-result-heading">
+    <div class="v65-p0-section-head"><h2 id="v65-result-heading">計算結果</h2><span id="v65-result-badge" class="v65-p0-neutral">未計算</span></div>
+    <div class="v65-p0-metrics">
+      <div><span>P1の理想評価 F1*</span><strong id="v65-f1">—</strong></div>
+      <div class="v66-p0-eta-card"><span>P0で生じる差 η</span><strong id="v65-eta">—</strong><small id="v65-eta-kind">未計算</small></div>
+      <div><span>配送可能な評価 F1</span><strong id="v65-feasible-f1">—</strong></div>
+    </div>
+    <div class="v66-p0-result-bottom"><span><b>必須訪問：</b><strong id="v65-mandatory">—</strong> <small id="v65-stock"></small></span><span>ηは小さいほど、P1の理想に近い結果です。</span></div>
+    <p id="v65-result-note" class="v65-p0-result-note"></p>
+    <details class="v66-p0-details" id="v65-result-detail" hidden><summary>計算結果の内訳</summary>
+      <div class="v65-p0-summary-table">
+        <div><span>ηの下界</span><strong id="v65-eta-lower">—</strong></div>
+        <div><span>実際の最低配送量</span><strong id="v65-effective-min">—</strong></div>
+        <div><span>訪問可能枠</span><strong id="v65-slots">—</strong></div>
+        <div><span>使用車両・回</span><strong id="v65-used">—</strong></div>
+      </div>
+    </details>
+    <div class="v65-p0-next"><span>この結果を配送計画に引き継ぎます。</span><a id="v65-p2-link" href="{{ url_for('plan') }}" aria-disabled="true">配送計画へ</a></div>
+  </section>
+
+  <details class="v66-p0-method-details"><summary>計算で確認していること</summary>
+    <p>在庫・車両の積載量・最低配送量・必須訪問・配送回数をまとめて確認します。</p>
+    <p>※ 現在の基本P0は、道路の通行止めや配送時間の上限を確認しません。</p>
+  </details>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='p1_sync.js') }}"></script>
+<script>
+(()=>{
+'use strict';
+const $=id=>document.getElementById(id), KIT_KG=4.5;
+const defaults={settingsVersion:2,minDeliveryKg:10,timeLimitSec:60,mipGapPercent:0.2,mandatoryVisit:'professor',modelMode:'basic'};
+const get=k=>{try{return JSON.parse(sessionStorage.getItem(k)||'null')}catch(_){return null}};
+const cfg=get('p0SolveSettings')||defaults;
+const savedDelivery=get('p1DeliverySettings')||{};
+const previous={t2:Number(savedDelivery.t2)||10,trips:Number(savedDelivery.trips)||3,delta:Number(savedDelivery.delta)||3};
+$('v65-min-kg').value=cfg.minDeliveryKg??10;
+$('v65-trips').value=previous.trips;
+$('v65-trucks').value=previous.t2;
+$('v65-time').value=cfg.timeLimitSec??60;
+$('v65-gap').value=cfg.mipGapPercent??0.2;
+const showMessage=(message,error=false)=>{const e=$('v65-p0-status');e.textContent=message;e.className='v65-p0-message'+(error?' v65-p0-error':'')};
+const fixed=n=>n==null||!Number.isFinite(Number(n))?'—':Number(n).toFixed(6);
+function readInputs(){
+ const minKg=Number($('v65-min-kg').value),rounds=Number($('v65-trips').value),trucks=Number($('v65-trucks').value),
+       seconds=Number($('v65-time').value),gap=Number($('v65-gap').value);
+ if(![$('v65-min-kg'),$('v65-trips'),$('v65-trucks'),$('v65-time'),$('v65-gap')].every(e=>e.value.trim()))throw Error('空欄の入力項目があります。');
+ if(!Number.isFinite(minKg)||minKg<0.1||minKg>1998||!Number.isInteger(rounds)||rounds<1||rounds>50||
+    !Number.isInteger(trucks)||trucks<1||trucks>50||!Number.isInteger(seconds)||seconds<5||seconds>60||
+    !Number.isFinite(gap)||gap<0.1||gap>10)throw Error('最小量0.1～1998kg、配送回1～50、車両1～50台、計算時間5～60秒、許容ギャップ0.1～10%で入力してください。');
+ const delta=Math.ceil((minKg-1e-10)/KIT_KG);
+ if(delta>Math.floor(2000/KIT_KG))throw Error('最小配送量が2t車両の積載可能量を超えています。');
+ return {trucks,rounds,delta,seconds,gap,minKg};
+}
+function updateConvert(){
+ try{const x=readInputs();$('v65-conversion').textContent=`実際の最小量：${(x.delta*KIT_KG).toFixed(1)}kg（${x.delta}キット）`;}
+ catch(e){$('v65-conversion').textContent=e.message}
+}
+function sameSettings(x){
+ const p=get('p0SolveSettings'),s=get('p1DeliverySettings');
+ return !!p&&!!s&&Number(p.minDeliveryKg)===x.minKg&&Number(p.timeLimitSec)===x.seconds&&Number(p.mipGapPercent)===x.gap&&
+  Number(s.t2)===x.trucks&&Number(s.trips)===x.rounds&&Number(s.delta)===x.delta&&s.unit==='kit';
+}
+function displayP0(result){
+ const p=result;
+ $('v65-result-detail').hidden=!p;
+ $('v65-f1').textContent=fixed(p?.f1Star);
+ $('v65-eta').textContent=fixed(p?.etaUpperBound);
+ $('v65-feasible-f1').textContent=fixed(p?.f1Feasible);
+ $('v65-mandatory').textContent=p?.mandatoryCount==null?'—':`${p.mandatoryCount}か所`;
+ $('v65-stock').textContent=p?.availableKits==null?'':`（在庫 ${p.availableKits}キット）`;
+ $('v65-effective-min').textContent=p?.effectiveMinKg==null?'—':`${p.effectiveMinKg}kg`;
+ $('v65-eta-lower').textContent=fixed(p?.etaLowerBound);
+ $('v65-slots').textContent=p?.totalPossibleVisitSlots==null?'—':`${p.totalPossibleVisitSlots}枠`;
+ $('v65-used').textContent=p?.vehiclesUsed==null?'—':`${p.vehiclesUsed}延べ台・最大${p.maxRounds}回`;
+ $('v65-eta-kind').textContent=p?.certified?'最適性を確認':p?.feasible?'参考値（最適性は未確認）':'未計算';
+ const badge=$('v65-result-badge');badge.textContent=!p?'未計算':p.certified?'最適性を確認':p.feasible?'実行可能':'解を確認できません';
+ badge.className=!p?'v65-p0-neutral':p.feasible?'v65-p0-positive':'v65-p0-negative';
+ $('v65-result-note').textContent=!p?'':(p.feasible?'':(p.reason||'計算条件を確認してください。'));
+ const p2Link=$('v65-p2-link');p2Link.setAttribute('aria-disabled',String(!p?.feasible));
+ if(p?.feasible)p2Link.href={{ url_for('plan') | tojson }};else p2Link.removeAttribute('href');
+}
+function refresh(){
+ updateConvert();const p1=get('allocationPlan'),saved=get('p0Result');
+ if(!p1){showMessage('P1の計算が必要です。');displayP0(null);return;}
+ if(p1.version!=={{ allocation_schema_version | tojson }}){showMessage('P1データが旧形式です。配分計画から再計算してください。',true);displayP0(null);return;}
+ let x;try{x=readInputs()}catch(e){showMessage(e.message,true);displayP0(null);return;}
+ if(!sameSettings(x)){showMessage('設定が変更されました。P0を再計算してください。');displayP0(null);return;}
+ if(saved?.planCreatedAt===p1.createdAt&&
+ Number(saved.conditions?.t2)===x.trucks&&Number(saved.conditions?.trips)===x.rounds&&Number(saved.conditions?.delta)===x.delta&&
+ Number(saved.conditions?.p0MinimumKg)===x.minKg&&Number(saved.conditions?.p0TimeLimitSec)===x.seconds&&Number(saved.conditions?.p0MipGapPercent)===x.gap){
+ displayP0(saved.result);showMessage('');
+ }else{displayP0(null);showMessage('P0を計算できます。')}
+}
+async function save(){
+ const x=readInputs(),newP0={...defaults,minDeliveryKg:x.minKg,timeLimitSec:x.seconds,mipGapPercent:x.gap};
+ const delivery={unit:'kit',t2:x.trucks,trips:x.rounds,delta:x.delta,p0SettingsVersion:2};
+ const oldP1=get('allocationPlan');let next=oldP1;
+ const oldSettings=get('p1DeliverySettings')||{};
+ const needsRecalculation=!!oldP1&&(Number(oldSettings.t2)!==x.trucks||Number(oldSettings.trips)!==x.rounds||Number(oldSettings.delta)!==x.delta||oldP1.version!=={{ allocation_schema_version | tojson }});
+ {
+  if(needsRecalculation){
+   showMessage('P1を再計算しています…');
+   if(oldP1.version!=={{ allocation_schema_version | tojson }})throw Error('古いP1配分データです。配分計画で再計算してください。');
+   next=await syncAllocationForDeliverySettings(oldP1,{t2:x.trucks,trips:x.rounds,delta:x.delta});
+  }
+  // 同じ条件で再計算するため、古い計算結果は使わない。
+  const stale=!sameSettings(x)||needsRecalculation;
+  if(next&&next!==oldP1)sessionStorage.setItem('allocationPlan',JSON.stringify(next));
+  sessionStorage.setItem('p0SolveSettings',JSON.stringify(newP0));
+  sessionStorage.setItem('p1DeliverySettings',JSON.stringify(delivery));
+  if(stale){sessionStorage.removeItem('p0Result');sessionStorage.removeItem('p2Result');sessionStorage.removeItem('planConditions');}
+  refresh();
+ }
+}
+function createPayload(x){
+ const p=get('allocationPlan');if(!p||p.version!=={{ allocation_schema_version | tojson }})throw Error('最新形式のP1を先に計算してください。');
+ if(!Array.isArray(p.food?.rows)||!Array.isArray(p.stages)||!p.stages[0])throw Error('P1データが不完全です。');
+ const shelters=p.food.rows.map((r,i)=>{
+   const demand=Math.round(Number(r.stageDemandsKg?.[0]??r.demandKg)),stock=Math.round(Number(r.stageOpeningStocks?.[0]??r.initialStockKg));
+   const lat=Number(r.lat),lng=Number(r.lng);
+   if(![demand,stock,lat,lng].every(Number.isFinite)||demand<=0||stock<0)throw Error(`避難所${i+1}の需要・備蓄・座標が不正です。`);
+   return {name:r.name,lat,lng,demandKits:demand,stockKits:stock,visited:false};
+ });
+ return {shelters,totalKits:Math.floor(Number(p.stages[0].totalKg)),targetRate:Number(p.targetRate),rho:Number(p.rho),
+   minKits:x.delta,maxRounds:x.rounds,truckCount:x.trucks,
+   p0TimeLimitSec:x.seconds,p0MipGapPercent:x.gap,p0MinimumKg:x.minKg,p0MaxRounds:x.rounds,
+   p0MandatoryVisitPolicy:'professor',p0ModelMode:'basic'};
+}
+
+$('v65-run').addEventListener('click',async()=>{
+ const btn=$('v65-run');btn.disabled=true;
+ try{
+  await save();const x=readInputs();if(!sameSettings(x))throw Error('設定を確認してください。');
+  const req=createPayload(x);showMessage('P0のMILPを計算しています。計算時間上限は'+x.seconds+'秒です。');
+  const res=await fetch('/api/p0-optimize',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(req)});
+  const p0=await res.json();if(!res.ok)throw Error(p0.error||'計算を実行できませんでした。');
+  // P0の結果が確認できない場合はP2へ進めない。
+  const p1=get('allocationPlan');
+  sessionStorage.setItem('p0Result',JSON.stringify({planCreatedAt:p1.createdAt,
+     conditions:{t2:x.trucks,trips:x.rounds,delta:x.delta,p0MinimumKg:x.minKg,p0TimeLimitSec:x.seconds,p0MipGapPercent:x.gap},result:p0}));
+  sessionStorage.removeItem('p2Result');
+  displayP0(p0);
+  showMessage(p0.feasible?'計算が完了しました。':'実行できる計画が見つかりませんでした。',!p0.feasible);
+ }catch(e){showMessage('計算エラー：'+e.message,true)}
+ finally{btn.disabled=false;}
+});
+for(const id of ['v65-min-kg','v65-trips','v65-trucks','v65-time','v65-gap']){
+ $(id).addEventListener('input',()=>{updateConvert();displayP0(null);showMessage('設定が変更されました。もう一度計算してください。')});
+}
+refresh();
+})();
+</script>
+{% endblock %}
