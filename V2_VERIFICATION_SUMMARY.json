@@ -1,0 +1,95 @@
+{
+  "schema": "suita-v2-regression-2026-11-13",
+  "scenario": {
+    "totalKits": 1777,
+    "targetRate": 0.8,
+    "rho": 0.001,
+    "minKits": 3,
+    "maxRounds": 5,
+    "truckCount": 18,
+    "vehicles": [
+      {
+        "capacityKg": 2000,
+        "count": 10
+      },
+      {
+        "capacityKg": 4000,
+        "count": 8
+      }
+    ],
+    "p0TimeLimitSec": 60,
+    "p0MipGapPercent": 0.2,
+    "p0MinimumKg": 13.5,
+    "p0MaxRounds": 5,
+    "p0MandatoryVisitPolicy": "professor",
+    "p0ModelMode": "basic",
+    "hubStockKits": [
+      889,
+      888
+    ],
+    "vehicleHubCounts": [
+      {
+        "2t": 5,
+        "4t": 4
+      },
+      {
+        "2t": 5,
+        "4t": 4
+      }
+    ],
+    "maxRoundMinutes": 360,
+    "maxTotalMinutes": 1080,
+    "loadingParallel": [
+      5,
+      5
+    ],
+    "visitWindows": {},
+    "roadMode": "all",
+    "p2DeltaF1": 0.0
+  },
+  "data": {
+    "total_shelters": 123,
+    "used_shelters": 100,
+    "initial_evacuees_included": 28020,
+    "total_evacuees_all": 32225,
+    "initial_stock_kits": 1433
+  },
+  "results": {
+    "p1_f1_star": 3.7573092354345676,
+    "p0_f1": 3.8369954792351333,
+    "p0_eta_upper": 0.07968624380056566,
+    "p0_eta_lower": 0.001315564696932725,
+    "p0_global_optimality_certified": false,
+    "p2_f2_minutes": 186.95,
+    "p2_f3": 971.766218,
+    "p2_used_trucks": 18,
+    "p2_used_rounds": 1,
+    "p2_selected_method": "P0-vehicle-exchange-v2",
+    "delivered_kits": 1777,
+    "independent_audit": {
+      "route_sum_kits": 1777,
+      "p0_sum_kits": 1777,
+      "f2_independent_recalc": 186.952,
+      "f2_reported": 186.95,
+      "max_round": 186.952,
+      "max_round_allowed": 360,
+      "total_allowed": 1080,
+      "north_delivered": 889,
+      "south_delivered": 888,
+      "outbound_vehicles": 18
+    }
+  },
+  "baseline": {
+    "p1_f1_star": 3.7573092354345676,
+    "p0_f1": 4.021124811270089,
+    "p0_eta_upper": 0.2638155758355212,
+    "p2_f2_minutes": 190.98,
+    "p2_f3": 902.501537
+  },
+  "limitations": [
+    "F3 worsened",
+    "no global optimality guarantee",
+    "100 facilities ungrouped",
+    "no live Google roads"
+  ]
+}
