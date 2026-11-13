@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}配送・積込条件の設定｜吹田市救援物資配分配送支援システム{% endblock %}
+{% block content %}
+<nav class="v75-flow-nav" aria-label="計画の進行状況"><a href="{{ url_for('allocation') }}" class="v75-step " ><span class="v75-step-num">1</span><span>配分計画</span></a><a href="{{ url_for('p0_page') }}" class="v75-step is-current" aria-current="step" ><span class="v75-step-num">2</span><span>配送・積込条件</span></a><a href="{{ url_for('plan') }}" class="v75-step " ><span class="v75-step-num">3</span><span>配送先・災害条件</span></a><a href="{{ url_for('routes_page') }}" class="v75-step " ><span class="v75-step-num">4</span><span>輸送経路</span></a></nav>
+<section class="p69-page p70-page">
+  <header class="p69-head"><h1>配送・積込条件の設定</h1></header>
+
+  <section class="p69-card" aria-labelledby="p70-basic-title">
+    <div class="p69-heading"><b class="p69-index">01</b><h2 id="p70-basic-title">配送条件</h2></div>
+    <div class="p69-grid">
+      <div class="p69-field">
+        <div class="p70-title"><label for="v65-min-kg">最小配送量（kg）</label><span class="condition-help v89-help" tabindex="0" role="note" aria-label="説明">?<span class="condition-tooltip">避難所1か所へ1回に届ける物資の最低量で、計算時は4.5kg単位に切り上げます。</span></span></div>
+        <input id="v65-min-kg" type="number" min="0.1" max="3996" step="0.1" placeholder="入力" autocomplete="off">
+      </div>
+      <div class="p69-field">
+        <div class="p70-title"><label for="v65-trips">最大配送回数</label><span class="condition-help v89-help" tabindex="0" role="note" aria-label="説明">?<span class="condition-tooltip">今回の計画で実施できる配送回の上限です。</span></span></div>
+        <input id="v65-trips" type="number" min="1" max="50" step="1" placeholder="入力" autocomplete="off">
+      </div>
+      <div class="p69-field">
+        <div class="p70-title"><label for="v65-trucks">2tトラック（全体）</label></div>
+        <input id="v65-trucks" type="number" min="0" max="50" step="1" placeholder="入力">
+      </div>
+      <div class="p69-field">
+        <div class="p70-title"><label for="v67-trucks-4t">4tトラック（全体）</label></div>
+        <input id="v67-trucks-4t" type="number" min="0" max="50" step="1" placeholder="入力">
+      </div>
+    </div>
+  </section>
+
+  <section class="p69-card" aria-labelledby="p70-hub-title">
+    <div class="p69-heading"><b class="p69-index">02</b><h2 id="p70-hub-title">拠点別の配分・車両</h2></div>
+    <div class="p70-supply">
+      <div class="p70-title"><label for="p70-stock-total">P1の総物資量（人日分・kg換算）</label><span class="condition-help v89-help" tabindex="0" role="note" aria-label="説明">?<span class="condition-tooltip">配分計画で設定した利用可能な物資総量を自動表示します。</span></span></div>
+      <input id="p70-stock-total" type="text" value="—" readonly aria-readonly="true">
+    </div>
+    <div class="p70-hubs">
+      <div class="p70-hub">
+        <h3>北部拠点</h3>
+        <div class="p70-hub-inputs">
+          <div class="p69-field"><div class="p70-title"><label for="p69-n2">2t 配備台数</label></div><input id="p69-n2" type="number" min="0" max="50" step="1" placeholder="入力"></div>
+          <div class="p69-field"><div class="p70-title"><label for="p69-n4">4t 配備台数</label></div><input id="p69-n4" type="number" min="0" max="50" step="1" placeholder="入力"></div>
+          <div class="p69-field"><div class="p70-title"><label for="p69-stock-n">拠点在庫（人日分）</label><span class="condition-help v89-help" tabindex="0" role="note" aria-label="説明">?<span class="condition-tooltip">北部に配分する物資量で、南部の在庫は総量から自動計算します。</span></span></div><input id="p69-stock-n" type="number" min="0" step="1" placeholder="入力"><small id="p70-north-equivalent">— kg</small></div>
+        </div>
+      </div>
+      <div class="p70-hub">
+        <h3>南部拠点</h3>
+        <div class="p70-hub-inputs">
+          <div class="p69-field"><div class="p70-title"><label for="p70-s2">2t 配備台数</label></div><input id="p70-s2" type="number" readonly aria-readonly="true"></div>
+          <div class="p69-field"><div class="p70-title"><label for="p70-s4">4t 配備台数</label></div><input id="p70-s4" type="number" readonly aria-readonly="true"></div>
+          <div class="p69-field"><div class="p70-title"><label for="p69-stock-s">拠点在庫（人日分）</label><span class="condition-help v89-help" tabindex="0" role="note" aria-label="説明">?<span class="condition-tooltip">総物資量から北部在庫を差し引いた南部の物資量です。</span></span></div><input id="p69-stock-s" type="number" readonly aria-readonly="true"><small id="p70-south-equivalent">— kg</small></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="p69-card" aria-labelledby="p70-operation-title">
+    <div class="p69-heading"><b class="p69-index">03</b><h2 id="p70-operation-title">時間・積込条件</h2></div>
+    <div class="p69-grid">
+      <div class="p69-field"><div class="p70-title"><label for="p69-round-min">1回の配送時間上限（分）</label><span class="condition-help v89-help" tabindex="0" role="note" aria-label="説明">?<span class="condition-tooltip">1回の配送で出発からすべての車両が帰着するまでの所要時間の上限です。</span></span></div><input id="p69-round-min" type="number" min="1" max="100000" step="1" placeholder="入力"></div>
+      <div class="p69-field"><div class="p70-title"><label for="p69-total-min">累積作業時間上限（分）</label><span class="condition-help v89-help" tabindex="0" role="note" aria-label="説明">?<span class="condition-tooltip">今回計画するすべての配送回の所要時間を合計した上限です。</span></span></div><input id="p69-total-min" type="number" min="1" max="100000" step="1" placeholder="入力"></div>
+      <div class="p69-field"><div class="p70-title"><label for="p69-load-n">北部 同時積込台数</label><span class="condition-help v89-help" tabindex="0" role="note" aria-label="説明">?<span class="condition-tooltip">北部拠点で同時に物資を積み込める車両数です。</span></span></div><input id="p69-load-n" type="number" min="1" max="50" step="1" placeholder="入力"></div>
+      <div class="p69-field"><div class="p70-title"><label for="p69-load-s">南部 同時積込台数</label><span class="condition-help v89-help" tabindex="0" role="note" aria-label="説明">?<span class="condition-tooltip">南部拠点で同時に物資を積み込める車両数です。</span></span></div><input id="p69-load-s" type="number" min="1" max="50" step="1" placeholder="入力"></div>
+      <div class="p69-field"><div class="p70-title"><label for="v65-time">計算時間上限（秒）</label><span class="condition-help v89-help" tabindex="0" role="note" aria-label="説明">?<span class="condition-tooltip">配送条件に適合する計画を探索する計算時間の上限です。</span></span></div><input id="v65-time" type="number" min="5" max="60" step="1" placeholder="入力"></div>
+      <div class="p69-field"><div class="p70-title"><label for="v65-gap">最適性許容ギャップ（%）</label><span class="condition-help v89-help" tabindex="0" role="note" aria-label="説明">?<span class="condition-tooltip">整数最適化の許容ギャップです。大規模データでは実行可能案を先に作るため、全体の最適性を保証する値ではありません。</span></span></div><input id="v65-gap" type="number" min="0.1" max="10" step="0.1" placeholder="入力"></div>
+    </div>
+  </section>
+
+  <section class="p69-card p69-execute">
+    <button id="v65-run" type="button">条件を確認して保存する</button><a href="{{ url_for('allocation') }}">配分計画に戻る</a>
+    <p id="v65-p0-status" role="status" aria-live="polite"></p>
+    <div class="p69-go"><a id="v65-p2-link" href="{{ url_for('plan') }}" aria-disabled="true">保存済み · 次へ：配送計画</a></div>
+  </section>
+
+  <!-- 計算処理で参照する要素は保持するが、画面には表示しない。 -->
+  <div id="p69-results" class="v88-internal-results" hidden aria-hidden="true">
+    <span id="v65-result-badge" hidden>未計算</span>
+    <div class="v88-internal-results" hidden aria-hidden="true">
+    <div class="p69-quick">
+      <div class="v75-stat-item"><div class="v75-stat-heading"><span>配分対象避難所</span><!-- 現在の条件で物資配分の計算対象となる避難所数です。現在のモデルは未訪問施設に最低配送量を確保する制約を含みます。 --></div><b id="v83-active">—</b></div>
+      <div class="v75-stat-item"><div class="v75-stat-heading"><span>使用可能物資量</span><!-- P1から引き継いだ輸送拠点の物資総量です。1人日分は食料3食と飲料水6本（合計4.5kg）です。 --></div><b id="v65-stock">—</b></div>
+      <div class="v75-stat-item"><div class="v75-stat-heading"><span>P0計画配分量</span><!-- P0の車両・在庫・時間条件を満たす配分案で、避難所に割り当てた物資量の合計です。使用可能物資量をすべて配分するとは限りません。 --></div><b id="v86-planned">—</b></div>
+      <div class="v75-stat-item"><div class="v75-stat-heading"><span>適用最小配送量</span><!-- 入力した最低配送量を4.5kg（1人日分）単位に切り上げて、計算で実際に適用した最小配送量です。車両1回の積載量ではなく、避難所1か所への1回の配送量の下限を表します。 --></div><b id="v65-effective-min">—</b></div>
+      <div class="v75-stat-item"><div class="v75-stat-heading"><span>車両出動回数（延べ）</span><!-- 車両ごとの出動回数を足した値です。たとえば同じ車が2回出動すると2回として数えます。 --></div><b id="v65-used">—</b></div>
+    </div>
+    <details class="v78-details" id="v78-result-details">
+      <summary>詳細結果を見る</summary>
+      <div class="v78-details-inner">
+    <div class="p69-results-grid">
+      <div class="p69-result p69-result-p1"><div class="p70-result-title"><h3>理想配分評価（F1*）</h3><!-- P1で求めた理想的な物資配分の評価値です。車両別の実配送経路は確定せず、需要・備蓄・供給量などをもとに公平性を評価します。小さいほど評価が良く、P0と比較する基準です。 --></div><strong id="v65-f1">—</strong></div>
+      <div class="p69-result p69-result-eta"><div class="p70-result-title"><h3>理想配分との差（η）</h3><!-- P0の実行可能配分評価（F1）から、P1の理想配分評価（F1*）を引いた差です。η＝F1－F1*。小さいほど理想的な配分に近く、表示値は現在の計算で見つかった計画の評価差です。 --></div><strong id="v65-eta">—</strong></div>
+      <div class="p69-result p69-result-f1"><div class="p70-result-title"><h3>実行可能配分評価（F1）</h3><!-- P0で車両容量・拠点在庫・配送回数・時間などの制約を満たすように決めた物資配分の評価値です。P1と同じ評価式で計算します。小さいほど良い配分です。実道路の経路はP2で別途検討します。 --></div><strong id="v65-feasible-f1">—</strong></div>
+    </div>
+    <details class="v81-facility-detail"><summary>P1理想値とP0実行可能配分の充足率を比較</summary>
+      <div class="v81-scroll"><table class="v81-table"><thead><tr><th>避難所</th><th>必要量</th><th>開始時備蓄</th><th>P1理想追加</th><th>P1充足率</th><th>P0実行可能追加</th><th>P0充足率</th><th>差</th></tr></thead>
+      <tbody id="v81-p0-coverage"><tr><td colspan="8">P0の計算後に表示します。</td></tr></tbody></table></div>
+      <!-- 同一施設の必要量・開始時備蓄を基準に比較。P1は理想案、P0は配送制約を含む計画案。 -->
+    </details>
+    <details class="v77-eta-analysis" aria-label="配分候補の比較">
+      <summary>配分候補の比較を見る</summary>
+      <small id="v80-refinement-note" class="p70-eta-kind" hidden></small>
+      <div id="v77-bars" class="v77-bars" role="img" aria-label="計算した配分案ごとの評価差"></div>
+      <div class="v76-table-scroll"><table class="v76-history-table v77-samples-table"><thead><tr><th>候補</th><th>配分評価（F1）</th><th>理想配分との差（η）</th><th>変更内容</th></tr></thead><tbody id="v77-candidate-body"><tr><td colspan="4">P0計算後に表示します。</td></tr></tbody></table></div>
+      <button id="v77-candidate-csv" type="button" class="v76-secondary">配分候補CSV保存</button>
+    </details>
+        <details class="v78-history-details">
+          <summary>条件別計算履歴を見る</summary>
+    <section class="v76-history" aria-labelledby="v76-history-title">
+      <div class="v76-history-title"><div><h3 id="v76-history-title">条件別計算結果の保存・比較</h3></div><button type="button" class="v76-secondary" id="v76-csv">CSV保存</button></div>
+      <div class="v76-table-scroll"><table class="v76-history-table"><thead><tr><th>計算日時</th><th>配送条件</th><th>拠点在庫・車両</th><th>時間・積込</th><th>理想配分評価（F1*）</th><th>理想配分との差（η）</th><th>実行可能配分評価（F1）</th><th>判定</th></tr></thead><tbody id="v76-history-body"><tr><td colspan="8">まだ比較結果はありません。</td></tr></tbody></table></div>
+      <div class="v76-history-actions"><span id="v76-history-note" role="status"></span><button type="button" class="v76-secondary" id="v76-clear-history">履歴を消去</button></div>
+    </section>
+        </details>
+      </div>
+    </details>
+    <p id="v65-result-note" class="p69-result-note" hidden></p>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='p1_sync.js') }}?v=71"></script><script>window.P0_ALLOCATION_VERSION={{ allocation_schema_version | tojson }};</script><script src="{{ url_for('static', filename='p0_dashboard_v69.js') }}?v=89"></script>{% endblock %}
