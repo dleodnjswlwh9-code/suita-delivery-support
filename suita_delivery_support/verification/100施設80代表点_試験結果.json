@@ -1,0 +1,27 @@
+{
+  "deliveryPointCount": 80,
+  "visitedShelters": 100,
+  "peakFacilitiesPerVehicleRound": 8,
+  "peakPhysicalStopsPerVehicleRound": 8,
+  "f2Minutes": 287.92,
+  "longestRoundMinutes": 202.25,
+  "f3": 1334.008835,
+  "p2CandidateCount": 4,
+  "assignmentMethod": "greedy-with-local-improvement",
+  "hubOutgoingKits": [
+    889,
+    888
+  ],
+  "usedTrucks": 10,
+  "usedRounds": 2,
+  "p2CandidatePareto": [
+    {
+      "method": "greedy-with-local-improvement",
+      "f1": 4.125138,
+      "f2": 287.922,
+      "f3": 1334.008835
+    }
+  ],
+  "p2SelectionRule": "候補中の最小F2から+10%以内でF3を最小化。同等ならF2・総走行・再訪問を優先。全体のパレート最適性は未証明。",
+  "roadTimeSource": "manhattan-20kmh"
+}
