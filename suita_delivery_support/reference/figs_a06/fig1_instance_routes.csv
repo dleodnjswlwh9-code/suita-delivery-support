@@ -1,0 +1,5 @@
+setting,truck,route_round1,boxes_in_visit_order
+uniform,1,0->3->5->1->0,3/5/2
+uniform,2,0->6->4->0,4/6
+urgency,1,0->2->1->0,8/2
+urgency,2,0->6->4->0,6/4
